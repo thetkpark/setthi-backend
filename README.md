@@ -11,3 +11,9 @@ Run in development mode
 
 Build the production version
 > yarn build
+
+Build and Run docker
+> docker build --tag setthi && docker run -d -p 8080:8080 setthi
+
+Stop running docker container
+> docker stop $(docker ps | grep setthi | cut -d' ' -f1)
