@@ -102,7 +102,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(__webpack_require__(/*! express */ "express"));
+const morgan_1 = __importDefault(__webpack_require__(/*! morgan */ "morgan"));
 const app = express_1.default();
+if (true) {
+    app.use(morgan_1.default('dev'));
+}
 app.get('/ping', (req, res) => {
     res.send({
         message: 'pong'
@@ -127,7 +131,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = __importDefault(__webpack_require__(/*! ./app */ "./src/app.ts"));
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 8080;
 app_1.default.listen(port, () => {
     console.log(`Running on ${port}`);
 });
@@ -155,6 +159,17 @@ module.exports = __webpack_require__(/*! ./src/index.ts */"./src/index.ts");
 /***/ (function(module, exports) {
 
 module.exports = require("express");
+
+/***/ }),
+
+/***/ "morgan":
+/*!*************************!*\
+  !*** external "morgan" ***!
+  \*************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("morgan");
 
 /***/ })
 
