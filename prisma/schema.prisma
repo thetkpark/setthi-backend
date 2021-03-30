@@ -16,3 +16,14 @@ model User {
   email     String    @unique
   password  String
 }
+
+enum CategoryType {
+  INCOME
+  EXPENSE
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+  SAVING
+}
