@@ -11,10 +11,20 @@ generator client {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  email     String    @unique
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  email     String   @unique
   password  String
+  Wallet    Wallet[]
+}
+
+model Wallet {
+  id        Int      @id @default(autoincrement())
+  name String
+  amount Decimal
+  createdAt DateTime @default(now())
+  owner     User     @relation(fields: [owner_id], references: [id])
+  owner_id  Int
 }
 
 enum CategoryType {
