@@ -58,11 +58,11 @@ model Category {
 
 model Saving {
   id             Int           @id @default(autoincrement())
-  name           String
+  title          String
   start_date     DateTime      @db.Date
   end_date       DateTime      @db.Date
   current_amount Decimal       @default(0)
-  final_amount   Decimal
+  target_amount  Decimal
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   owner          User          @relation(fields: [owner_id], references: [id])
