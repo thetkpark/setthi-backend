@@ -2,10 +2,99 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
+}
+
+model User {
+  id          Int           @id @default(autoincrement())
+  createdAt   DateTime      @default(now())
+  email       String        @unique
+  password    String
+  updatedAt   DateTime      @updatedAt
+  Wallet      Wallet[]
+  Label       Label[]
+  Category    Category[]
+  Saving      Saving[]
+  Transaction Transaction[]
+}
+
+model Wallet {
+  id          Int           @id @default(autoincrement())
+  name        String
+  amount      Decimal
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  owner       User          @relation(fields: [owner_id], references: [id])
+  owner_id    Int
+  Transaction Transaction[]
+}
+
+model Label {
+  id        Int      @id @default(autoincrement())
+  label     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  owner     User     @relation(fields: [owner_id], references: [id])
+  owner_id  Int
+}
+
+model Category {
+  id          Int           @id @default(autoincrement())
+  name        String
+  type        CategoryType
+  color       String
+  is_deleted  Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  owner       User          @relation(fields: [owner_id], references: [id])
+  owner_id    Int
+  Transaction Transaction[]
+}
+
+model Saving {
+  id             Int           @id @default(autoincrement())
+  name           String
+  start_date     DateTime      @db.Date
+  end_date       DateTime      @db.Date
+  current_amount Decimal       @default(0)
+  final_amount   Decimal
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  owner          User          @relation(fields: [owner_id], references: [id])
+  owner_id       Int
+  Transaction    Transaction[]
+}
+
+model Transaction {
+  id               Int             @id @default(autoincrement())
+  title            String
+  amount           Decimal
+  date             DateTime        @db.Date
+  transaction_type TransactionType
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  category         Category        @relation(fields: [category_id], references: [id])
+  category_id      Int
+  wallet           Wallet          @relation(fields: [wallet_id], references: [id])
+  wallet_id        Int
+  saving           Saving?         @relation(fields: [saving_id], references: [id])
+  saving_id        Int?
+  owner            User            @relation(fields: [owner_id], references: [id])
+  owner_id         Int
+}
+
+enum CategoryType {
+  INCOME
+  EXPENSE
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+  SAVING
 }
