@@ -35,11 +35,12 @@ model Wallet {
 }
 
 model Label {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   label     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  owner     User     @relation(fields: [owner_id], references: [id])
+  type      LabelType
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  owner     User      @relation(fields: [owner_id], references: [id])
   owner_id  Int
 }
 
@@ -89,6 +90,11 @@ model Transaction {
 }
 
 enum CategoryType {
+  INCOME
+  EXPENSE
+}
+
+enum LabelType {
   INCOME
   EXPENSE
 }
