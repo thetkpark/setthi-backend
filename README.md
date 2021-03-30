@@ -152,7 +152,10 @@ Stop running docker container
     ]
   }
   ```
+#### Error Response
 
+- Status Code: `401`
+- Response Body: NONE
 ---
 
 ### Get Savings
@@ -180,7 +183,10 @@ Stop running docker container
     },
   ]
   ```
+#### Error Response
 
+- Status Code: `401`
+- Response Body: NONE
 ---
 
 ### Create new saving
@@ -222,7 +228,180 @@ Stop running docker container
   ]
   ```
 
+#### Error Response
+
+- Status Code: `400`
+
+- Response Body 
+
+  ```json
+  {
+    "success": false,
+    "message": "title is required" | "start_date is required" | "target_amount is required" | "end_date is required"
+  }
+  ```
+
+- Status Code: `401`
+- Response Body: NONE
+
 ---
 
+### Get setting screen
 
+- Path: `/api/settings`
+
+- Method: `GET`
+
+- Request Header
+
+  - Authorization: Bearer <token>
+
+#### Success Response
+
+- Status Code: `200`
+
+- Response Body
+
+  ```json
+  {
+    "labels": <Integer>,
+    "categories": <Integer>
+  }
+  ```
+
+#### Error Response
+
+- Status Code: `401`
+- Response Body: NONE
+
+---
+
+### Get all labels
+
+- Path: `/api/labels`
+
+- Method: `GET`
+
+- Request Header
+
+  - Authorization: Bearer <token>
+
+#### Success Response
+
+- Status Code: `200`
+
+- Response Body
+
+  ```json
+  [
+    {
+      "id": <Integer>,
+      "label": <String>,
+      "type": "INCOME" | "EXPENSE"
+  	}
+  ]
+  ```
+
+#### Error Response
+
+- Status Code: `401`
+- Response Body: NONE
+
+---
+
+### Create new label
+
+- Path: `/api/labels`
+
+- Method: `POST`
+
+- Request Header
+
+  - Authorization: Bearer <token>
+
+- Request Body
+
+  ```json
+  {
+    "label": <String>,
+    "type": "INCOME" | "EXPENSE"
+  }
+  ```
+
+#### Success Response
+
+- Status Code: `201`
+
+- Response Body
+
+  ```json
+  [
+    {
+      "id": <Integer>,
+      "label": <String>,
+      "type": "INCOME" | "EXPENSE"
+  	}, 
+  ]
+  ```
+
+#### Error Response
+
+- Status Code: `400`
+
+- Response Body
+
+  ```json
+  {
+    "success": false,
+    "message": "label is required" | "type is required" | "type can only be INCOME or EXPENSE"
+  }
+  ```
+
+- Status Code: `401`
+
+- Response Body: NONE
+
+---
+
+### Edit label
+
+- Path: `/api/labels/{id}`
+
+- Method: `PATCH`
+
+- Request Header
+
+  - Authorization: Bearer <token>
+
+- Request Body
+
+  ```json
+  {
+    "label": <String>?,
+    "type": "INCOME" | "EXPENSE"?
+  }
+  ```
+
+#### Success Response
+
+- Status Code: `201`
+
+- Response Body
+
+  ```json
+  [
+    {
+      "id": <Integer>,
+      "label": <String>,
+      "type": "INCOME" | "EXPENSE"
+  	}, 
+  ]
+  ```
+
+#### Error Response
+
+- Status Code: `401`
+- Response Body: NONE
+
+---
 
