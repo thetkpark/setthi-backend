@@ -8,7 +8,6 @@ RUN yarn
 
 COPY ./ ./
 
-RUN yarn build
-EXPOSE 8080
+EXPOSE 3000
 
-CMD ["node", "build/main.js"]
+CMD ["yarn", "start"]
