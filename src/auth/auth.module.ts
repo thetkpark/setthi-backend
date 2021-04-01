@@ -12,7 +12,7 @@ import { JwtStrategy } from './jwt.strategy'
 		UsersModule,
 		PassportModule,
 		JwtModule.register({
-			secret: 'helloworld',
+			secret: process.env.JWT_SECRET,
 			signOptions: { algorithm: 'HS256' },
 		}),
 	],
