@@ -87,7 +87,7 @@ Stop running docker container
 
 ### Registration
 
-- Path: `/api/regis`
+- Path: `/api/auth/regis`
 
 - Method: `POST`
 
@@ -127,7 +127,7 @@ Stop running docker container
 ---
 ### Sign In
 
-- Path: `/api/signin`
+- Path: `/api/auth/signin`
 
 - Method: `POST`
 
@@ -162,25 +162,6 @@ Stop running docker container
   {
     "success": false,
     "message": "username is required" | "password is required" | "email or/and password doesn't matched"
-  }
-  ```
-
----
-
-### Sign Out
-
-- Path: `/api/signout`
-- Method: `GET`
-
-#### Success Response
-
-- Status Code: `200`
-
-- Response Body
-
-  ```json
-  {
-    "success": true
   }
   ```
 
