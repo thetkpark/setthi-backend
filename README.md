@@ -23,6 +23,8 @@ Stop running docker container
 
 ## API Routes
 
+# Authentication 
+
 ### Registration
 
 - Path: `/api/regis`
@@ -124,6 +126,8 @@ Stop running docker container
 
 ---
 
+# Timeline Screen
+
 ### Get Timeline
 
 - Path: `/api/timeline`
@@ -158,9 +162,101 @@ Stop running docker container
 - Response Body: NONE
 ---
 
-### Get Savings
+# Wallet Screen
 
-- Path: `/api/saving`
+### Get wallet screen
+
+- Path: `/api/wallets`
+- Method: `GET`
+- Request Header
+  - Authorization: Bearer <token>
+
+#### Success Response
+
+- Status Code: `200`
+
+- Response Body
+
+  ```json
+  {
+    "history": [
+      // Sort from latest to oldest
+      {
+        "date": <Date>,
+        "amount": <Double>
+      }
+    ]
+    "wallets": [
+      {
+        "id": <Integer>,
+        "name": <String>,
+        "amount": <Double>,
+      }
+  	]
+  }
+  ```
+
+#### Error Response
+
+- Status Code: `401`
+- Response Body: NONE
+
+---
+
+### Create new wallet
+
+- Path: `/api/wallet`
+- Method: `POST`
+- Request Header
+  - Authorization: Bearer <token>
+
+#### Success Response
+
+- Status Code: `200`
+
+- Response Body
+
+  ```json
+  {
+    "history": [
+      // Sort from latest to oldest
+      {
+        "date": <Date>,
+        "amount": <Double>
+      },
+    ],
+    "wallets": [
+      {
+        "id": <Integer>,
+        "name": <String>,
+        "amount": <Double>,
+      },
+  	]
+  }
+  ```
+
+#### Error Response
+
+- Status Code: `400`
+
+- Response Body 
+
+  ```json
+  {
+    "success": false,
+    "message": "title is required" | "start_date is required" | "target_amount is required" | "end_date is required"
+  }
+  ```
+- Status Code: `401`
+
+- Response Body: NONE
+---
+
+# Saving Screen
+
+### Get all Savings
+
+- Path: `/api/savings`
 - Method: `GET`
 - Request Header
   - Authorization: Bearer <token>
@@ -244,7 +340,10 @@ Stop running docker container
 - Status Code: `401`
 - Response Body: NONE
 
+
 ---
+
+# Setting Screen
 
 ### Get setting screen
 
@@ -264,8 +363,21 @@ Stop running docker container
 
   ```json
   {
-    "labels": <Integer>,
-    "categories": <Integer>
+    "labels": [
+      {
+        "id": <Integer>,
+        "label": <String>,
+        "type": "INCOME" | "EXPENSE"
+  		},
+    ],
+    "categories": [
+      {
+        "id": <Integer>,
+        "name": <String>,
+        "color": <String>,
+        "type": "INCOME" | "EXPENSE"
+  		}
+    ]
   }
   ```
 
@@ -311,7 +423,7 @@ Stop running docker container
 
 ### Create new label
 
-- Path: `/api/labels`
+- Path: `/api/label`
 
 - Method: `POST`
 
@@ -365,7 +477,7 @@ Stop running docker container
 
 ### Edit label
 
-- Path: `/api/labels/{id}`
+- Path: `/api/label/{id}`
 
 - Method: `PATCH`
 
@@ -399,6 +511,234 @@ Stop running docker container
   ```
 
 #### Error Response
+
+- Status Code: `401`
+- Response Body: NONE
+
+---
+
+### Delete a label
+
+- Path: `/api/label/{id}`
+
+- Method: `DELETE`
+
+- Request Header
+
+  - Authorization: Bearer <token>
+
+
+#### Success Response
+
+- Status Code: `201`
+
+- Response Body
+
+  ```json
+  [
+    {
+      "id": <Integer>,
+      "label": <String>,
+      "type": "INCOME" | "EXPENSE"
+  	}, 
+  ]
+  ```
+
+#### Error Response
+
+- Status Code: `404`
+
+- Response Body
+
+  ```json
+  {
+    "success": false,
+    "message": "Label not found"
+  }
+  ```
+
+- Status Code: `401`
+- Response Body: NONE
+
+---
+
+### Get all Categories
+
+- Path: `/api/categories`
+
+- Method: `GET`
+
+- Request Header
+
+  - Authorization: Bearer <token>
+
+#### Success Response
+
+- Status Code: `200`
+
+- Response Body
+
+  ```json
+  [
+    // Only return if is_delete is false
+    {
+      "id": <Integer>,
+      "name": <String>,
+      "color": <String>,
+      "type": "INCOME" | "EXPENSE"
+  	}
+  ]
+  ```
+
+#### Error Response
+
+- Status Code: `401`
+- Response Body: NONE
+
+---
+
+### Create new category
+
+- Path: `/api/category`
+
+- Method: `POST`
+
+- Request Header
+
+  - Authorization: Bearer <token>
+
+- Request Body
+
+  ```json
+  {
+    "name": <String>,
+    "color": <String>,
+    "type": "INCOME" | "EXPENSE"
+  }
+  ```
+
+#### Success Response
+
+- Status Code: `201`
+
+- Response Body
+
+  ```json
+  [
+    // Only return if is_delete is false
+    {
+      "id": <Integer>,
+      "name": <String>,
+      "color": <String>,
+      "type": "INCOME" | "EXPENSE"
+  	}
+  ]
+  ```
+
+#### Error Response
+
+- Status Code: `400`
+
+- Response Body
+
+  ```json
+  {
+    "success": false,
+    "message": "name is required" | "type is required" | "type can only be INCOME or EXPENSE" | "color is required"
+  }
+  ```
+
+- Status Code: `401`
+
+- Response Body: NONE
+
+---
+
+### Edit Category
+
+- Path: `/api/category/{id}`
+
+- Method: `PATCH`
+
+- Request Header
+
+  - Authorization: Bearer <token>
+
+- Request Body
+
+  ```json
+  {
+    "label": <String>?,
+    "color": <String>?,
+    "type": "INCOME" | "EXPENSE"?
+  }
+  ```
+
+#### Success Response
+
+- Status Code: `201`
+
+- Response Body
+
+  ```json
+  [
+    // Only return if is_delete is false
+    {
+      "id": <Integer>,
+      "name": <String>,
+      "color": <String>,
+      "type": "INCOME" | "EXPENSE"
+  	}
+  ]
+  ```
+
+#### Error Response
+
+- Status Code: `401`
+- Response Body: NONE
+
+---
+
+### Delete a category
+
+- Path: `/api/category/{id}`
+
+- Method: `DELETE`
+
+- Request Header
+
+  - Authorization: Bearer <token>
+
+#### Success Response
+
+- Status Code: `201`
+
+- Response Body
+
+  ```json
+  [
+    // Only return if is_delete is false
+    {
+      "id": <Integer>,
+      "name": <String>,
+      "color": <String>,
+      "type": "INCOME" | "EXPENSE"
+  	}
+  ]
+  ```
+
+#### Error Response
+
+- Status Code: `404`
+
+- Response Body
+
+  ```json
+  {
+    "success": false,
+    "message": "Category not found"
+  }
+  ```
 
 - Status Code: `401`
 - Response Body: NONE
