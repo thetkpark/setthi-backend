@@ -120,8 +120,9 @@ Stop running docker container
 
   ```json
   {
-    "success": false,
-    "message": "username is required" | "password is required"
+      "statusCode": 400,
+      "message": "This email is used" || "Email is required" || "Password is required",
+      "error": "Bad Request"
   }
   ```
 ---
@@ -154,14 +155,14 @@ Stop running docker container
 
 #### Error Response
 
-- Status Code: `400`
+- Status Code: `401`
 
 - Response Body
 
   ```json
   {
-    "success": false,
-    "message": "username is required" | "password is required" | "email or/and password doesn't matched"
+      "statusCode": 401,
+      "message": "Unauthorized"
   }
   ```
 
