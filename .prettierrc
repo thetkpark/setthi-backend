@@ -7,5 +7,5 @@
 	"tabWidth": 4,
 	"arrowParens": "avoid",
 	"printWidth": 120,
-	"endOfLine": "auto",
+	"endOfLine": "auto"
 }

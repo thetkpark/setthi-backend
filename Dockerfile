@@ -8,7 +8,10 @@ RUN yarn
 
 COPY ./ ./
 
-RUN yarn build
-EXPOSE 8080
+RUN npx prisma generate
 
-CMD ["node", "build/main.js"]
+RUN yarn build
+
+EXPOSE 3000
+
+CMD ["yarn", "start:prod"]
