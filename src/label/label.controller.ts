@@ -23,7 +23,6 @@ export class LabelController {
 	@UseGuards(JwtAuthGuard)
 	async createLabel(@Body() { name, type }: LabelDto, @Request() req): Promise<Label[]> {
 		const userId = req.user.userId
-		console.log(userId)
 		const labelType: LabelType = await this.labelService.getLabelType(type)
 		await this.labelService.createLabel(name, labelType, userId)
 		return this.labelService.getLabels(userId)

@@ -45,7 +45,7 @@ export class CategoryService {
 	}
 
 	async checkCategoryOwnership(ownerId: number, categoryId: number): Promise<boolean> {
-		const category = await this.prisma.label.findFirst({
+		const category = await this.prisma.category.findFirst({
 			where: {
 				AND: [{ owner_id: ownerId }, { id: categoryId }],
 			},
