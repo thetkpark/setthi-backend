@@ -293,7 +293,7 @@ Stop running docker container
 
 # Wallet Screen
 
-### Get wallet screen
+### Get all wallets
 
 - Path: `/api/wallets`
 - Method: `GET`
@@ -430,8 +430,9 @@ Stop running docker container
 - Path: `/api/wallet/{id}`
 - Method: `PATCH`
 - Request Header
-  - Authorization: Bearer <token>
-
+  
+- Authorization: Bearer <token>
+  
 - Request Body
 
   ```json

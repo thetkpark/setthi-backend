@@ -1,4 +1,55 @@
-import { Injectable } from '@nestjs/common';
+import { Wallet } from '.prisma/client'
+import { Injectable } from '@nestjs/common'
+import { PrismaService } from 'src/prisma.service'
 
 @Injectable()
-export class WalletService {}
+export class WalletService {
+	constructor(private prisma: PrismaService) {}
+
+	async createWallet(name: string, amount: number, ownerId: number): Promise<Wallet> {
+		return this.prisma.wallet.create({
+			data: {
+				name,
+				amount,
+				owner_id: ownerId,
+			},
+		})
+	}
+
+	async getWallets(ownerId: number): Promise<Wallet[]> {
+		return this.prisma.wallet.findMany({
+			where: {
+				owner_id: ownerId,
+			},
+		})
+	}
+
+	async checkWalletOwnership(ownerId: number, walletId: number): Promise<boolean> {
+		const wallet = await this.prisma.wallet.findFirst({
+			where: {
+				AND: [{ owner_id: ownerId }, { id: walletId }],
+			},
+		})
+		console.log(wallet)
+		return wallet ? true : false
+	}
+
+	async editWallet(walletId: number, name: string): Promise<Wallet> {
+		return this.prisma.wallet.update({
+			where: {
+				id: walletId,
+			},
+			data: {
+				name,
+			},
+		})
+	}
+
+	async deleteWallet(walletId: number): Promise<Wallet> {
+		return this.prisma.wallet.delete({
+			where: {
+				id: walletId,
+			},
+		})
+	}
+}
