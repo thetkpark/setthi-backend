@@ -43,7 +43,7 @@ export class CategoryController {
 		@Request() req
 	): Promise<Category[]> {
 		const userId = req.user.userId
-		const categoryId = params.id
+		const categoryId = parseInt(params.id)
 		const isOwnCategory = await this.categoryService.checkCategoryOwnership(userId, categoryId)
 		if (!isOwnCategory) throw new ForbiddenException()
 		const categoryType: CategoryType = await this.categoryService.getCategoryType(type)
@@ -55,7 +55,7 @@ export class CategoryController {
 	@UseGuards(JwtAuthGuard)
 	async deleteCategory(@Param() params, @Request() req): Promise<Category[]> {
 		const userId = req.user.userId
-		const categoryId = params.id
+		const categoryId = parseInt(params.id)
 		const isOwnCategory = await this.categoryService.checkCategoryOwnership(userId, categoryId)
 		if (!isOwnCategory) throw new ForbiddenException()
 		await this.categoryService.deleteCategory(categoryId)
