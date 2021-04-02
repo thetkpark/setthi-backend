@@ -18,7 +18,7 @@ export class CategoryService {
 	async getCategories(ownerId: number): Promise<Category[]> {
 		return this.prisma.category.findMany({
 			where: {
-				owner_id: ownerId,
+				AND: [{ owner_id: ownerId }, { is_deleted: false }],
 			},
 		})
 	}
@@ -37,7 +37,10 @@ export class CategoryService {
 	}
 
 	async deleteCategory(categoryId: number): Promise<Category> {
-		return this.prisma.category.delete({
+		return this.prisma.category.update({
+			data: {
+				is_deleted: true,
+			},
 			where: {
 				id: categoryId,
 			},
