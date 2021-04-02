@@ -15,4 +15,10 @@ export class WalletController {
 		await this.walletService.createWallet(name, amount, userId)
 		return this.walletService.getWallets(userId)
 	}
+
+	@Get('wallets')
+	@UseGuards(JwtAuthGuard)
+	async getWallets(@Request() req): Promise<Wallet[]> {
+		return this.walletService.getWallets(req.user.userId)
+	}
 }
