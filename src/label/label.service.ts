@@ -34,6 +34,24 @@ export class LabelService {
 			},
 		})
 	}
+
+	async deleteLabel(labelId: number): Promise<Label> {
+		return this.prisma.label.delete({
+			where: {
+				id: labelId,
+			},
+		})
+	}
+
+	async checkLabelOwnership(ownerId: number, labelId: number): Promise<boolean> {
+		const label = await this.prisma.label.findFirst({
+			where: {
+				AND: [{ owner_id: ownerId }, { id: labelId }],
+			},
+		})
+		return label ? true : false
+	}
+
 	async getLabelType(type: string): Promise<LabelType> {
 		switch (type) {
 			case 'Income':
