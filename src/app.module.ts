@@ -7,7 +7,7 @@ import { ConfigModule } from '@nestjs/config'
 import { TransactionService } from './transaction/transaction.service'
 import { TransactionModule } from './transaction/transaction.module'
 import { PrismaService } from './prisma.service'
-import { WalletModule } from './wallet/wallet.module';
+import { WalletModule } from './wallet/wallet.module'
 
 @Module({
 	imports: [

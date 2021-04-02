@@ -23,4 +23,25 @@ export class WalletService {
 			},
 		})
 	}
+
+	async checkWalletOwnership(ownerId: number, walletId: number): Promise<boolean> {
+		const wallet = await this.prisma.wallet.findFirst({
+			where: {
+				owner_id: ownerId,
+				id: walletId,
+			},
+		})
+		return wallet ? true : false
+	}
+
+	async editWallet(walletId: number, name: string): Promise<Wallet> {
+		return this.prisma.wallet.update({
+			where: {
+				id: walletId,
+			},
+			data: {
+				name,
+			},
+		})
+	}
 }
