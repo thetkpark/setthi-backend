@@ -170,6 +170,8 @@ Stop running docker container
 
 # Timeline Screen
 
+> TODO: Decide the response body
+
 ### Get Timeline
 
 - Path: `/api/timeline`
@@ -185,7 +187,7 @@ Stop running docker container
 
   ```json
   {
-    "balance": 10000.92,
+    "balance": <>,
     "transaction": [
       // Sorted by createdAt from lastest to oldest
       // Only latest 10 transaction
@@ -193,8 +195,8 @@ Stop running docker container
       "title": <String>,
       "amount": <Double>,
       "transaction_type": "INCOME" | "EXPENSE" | "SAVING",
-      "createdAt": <Datetime>,
-      
+      "date": <Datetime>,
+      ...
     ]
   }
   ```
@@ -202,6 +204,91 @@ Stop running docker container
 
 - Status Code: `401`
 - Response Body: NONE
+---
+
+### Get all Transactions
+
+- Path: `/api/transactions`
+- Method: `GET`
+- Request Header
+  - Authorization: Bearer <token>
+
+#### Success Response
+
+- Status Code: `200`
+
+- Response Body
+
+  ```json
+  [
+      // Sorted by createdAt from lastest to oldest
+      // Only latest 10 transaction
+      "id": <Integer>,
+      "title": <String>,
+      "amount": <Double>,
+      "transaction_type": "INCOME" | "EXPENSE" | "SAVING",
+      "date": <Datetime>,
+      ...
+  ]
+  ```
+
+#### Error Response
+
+- Status Code: `401`
+- Response Body: NONE
+
+---
+
+### Create new transaction
+
+- Path: `/api/transaction`
+
+- Method: `GET`
+
+- Request Header
+
+  - Authorization: Bearer <token>
+
+- Request Body
+
+  ```json
+  {
+    "title": <String>,
+    "wallet_id": <Integer>,
+    "amount": <Double>,
+    "transaction_type": "INCOME" | "EXPENSE" | "SAVING",
+    "category_id": <Integer>,
+    "date": <Date>
+  }
+  ```
+
+#### Success Response
+
+- Status Code: `200`
+
+- Response Body
+
+  ```json
+  {
+    "balance": <>,
+    "transaction": [
+      // Sorted by createdAt from lastest to oldest
+      // Only latest 10 transaction
+      "id": <Integer>,
+      "title": <String>,
+      "amount": <Double>,
+      "transaction_type": "INCOME" | "EXPENSE" | "SAVING",
+      "date": <Datetime>,
+      ...
+    ]
+  }
+  ```
+
+#### Error Response
+
+- Status Code: `401`
+- Response Body: NONE
+
 ---
 
 # Wallet Screen
@@ -286,12 +373,118 @@ Stop running docker container
   ```json
   {
     "success": false,
-    "message": "title is required" | "start_date is required" | "target_amount is required" | "end_date is required"
+    "message": "title is required" | "start_date is required" | "target_amount is required" | "end_date is required" | "Limited number of wallets"
   }
   ```
 - Status Code: `401`
 
 - Response Body: NONE
+---
+### Get a wallet
+
+- Path: `/api/wallet/{id}`
+- Method: `GET`
+- Request Header
+  - Authorization: Bearer <token>
+#### Success Response
+
+- Status Code: `200`
+
+- Response Body
+
+  ```json
+  {
+        "id": <Integer>,
+        "name": <String>,
+        "amount": <Double>
+  }
+  
+  // OR
+  
+  {
+    "history": [
+      // Sort from latest to oldest
+      {
+        "date": <Date>,
+        "amount": <Double>
+      },
+    ],
+    "wallets": [
+      {
+        "id": <Integer>,
+        "name": <String>,
+        "amount": <Double>,
+      },
+  	]
+  }
+  ```
+
+#### Error Response
+
+- Status Code: `404`
+
+---
+
+### Edit a wallet
+
+- Path: `/api/wallet/{id}`
+- Method: `PATCH`
+- Request Header
+  - Authorization: Bearer <token>
+
+- Request Body
+
+  ```json
+  {
+        "name": <String>?,
+  }
+  ```
+
+#### Success Response
+
+- Status Code: `201`
+
+- Response Body
+
+  ```json
+  {
+        "id": <Integer>,
+        "name": <String>,
+        "amount": <Double>
+  }
+  ```
+
+#### Error Response
+
+- Status Code: `404`
+
+---
+
+### Delete a wallet
+
+- Path: `/api/wallet/{id}`
+- Method: `DELETE`
+- Request Header
+  - Authorization: Bearer <token>
+
+#### Success Response
+
+- Status Code: `201`
+
+- Response Body
+
+  ```json
+  {
+        "id": <Integer>,
+        "name": <String>,
+        "amount": <Double>
+  }
+  ```
+
+#### Error Response
+
+- Status Code: `404`
+
 ---
 
 # Saving Screen
@@ -375,7 +568,7 @@ Stop running docker container
   ```json
   {
     "success": false,
-    "message": "title is required" | "start_date is required" | "target_amount is required" | "end_date is required"
+    "message": "title is required" | "start_date is required" | "target_amount is required" | "end_date is required" | "Limited number of wallets"
   }
   ```
 

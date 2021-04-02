@@ -22,12 +22,10 @@ export class AuthService {
 		return this.usersService.createUser(email, password)
 	}
 
-	async getToken(user: User) {
+	async getToken(user: User): Promise<string> {
 		const payload = {
 			sub: user.id,
 		}
-		return {
-			token: this.jwtService.sign(payload),
-		}
+		return this.jwtService.signAsync(payload)
 	}
 }
