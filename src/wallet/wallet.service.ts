@@ -1,4 +1,4 @@
-import { Wallet } from '.prisma/client'
+import { prisma, TransactionType, Wallet } from '.prisma/client'
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma.service'
 
@@ -41,6 +41,30 @@ export class WalletService {
 			},
 			data: {
 				name,
+			},
+		})
+	}
+
+	async updateWalletAmount(walletId: number, transactionType: TransactionType, amount: number): Promise<Wallet> {
+		const wallet = await this.prisma.wallet.findFirst({
+			where: {
+				id: walletId,
+			},
+		})
+		let walletAmount = wallet.amount.toNumber()
+
+		if (transactionType == TransactionType.INCOME) {
+			walletAmount += amount
+		} else {
+			walletAmount -= amount
+		}
+
+		return this.prisma.wallet.update({
+			where: {
+				id: walletId,
+			},
+			data: {
+				amount: walletAmount,
 			},
 		})
 	}
