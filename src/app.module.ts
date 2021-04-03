@@ -10,6 +10,7 @@ import { PrismaService } from './prisma.service'
 import { WalletModule } from './wallet/wallet.module'
 import { LabelModule } from './label/label.module'
 import { CategoryModule } from './category/category.module'
+import { SavingModule } from './saving/saving.module';
 
 @Module({
 	imports: [
@@ -22,6 +23,7 @@ import { CategoryModule } from './category/category.module'
 		WalletModule,
 		LabelModule,
 		CategoryModule,
+		SavingModule,
 	],
 	controllers: [AppController],
 	providers: [AppService, TransactionService, PrismaService],
