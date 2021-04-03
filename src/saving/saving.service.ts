@@ -49,15 +49,20 @@ export class SavingService {
 	}
 
 	async updateCurrentAmount(savingId: number, amount: number): Promise<Saving> {
+		// TODO: Handle case when transaction to the finished saving
 		const saving = await this.prisma.saving.findFirst({ where: { id: savingId } })
 		const savingAmount = saving.current_amount.toNumber() + amount
+		const targetAmount = saving.target_amount.toNumber()
+		const updateData = {
+			current_amount: savingAmount,
+			is_finish: false,
+		}
+		if (savingAmount === targetAmount) updateData.is_finish = true
 		return this.prisma.saving.update({
 			where: {
 				id: savingId,
 			},
-			data: {
-				current_amount: savingAmount,
-			},
+			data: updateData,
 		})
 	}
 
