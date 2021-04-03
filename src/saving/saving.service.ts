@@ -48,6 +48,19 @@ export class SavingService {
 		})
 	}
 
+	async updateCurrentAmount(savingId: number, amount: number): Promise<Saving> {
+		const saving = await this.prisma.saving.findFirst({ where: { id: savingId } })
+		const savingAmount = saving.current_amount.toNumber() + amount
+		return this.prisma.saving.update({
+			where: {
+				id: savingId,
+			},
+			data: {
+				current_amount: savingAmount,
+			},
+		})
+	}
+
 	async deleteSaving(id: number): Promise<Saving> {
 		return this.prisma.saving.delete({
 			where: {
