@@ -66,6 +66,9 @@ A NodeJS backend for Setthi app.
 Install all the dependencies
 > yarn
 
+Generate prisma schema
+> npx prisma generate
+
 Run in development mode
 > yarn dev
 
