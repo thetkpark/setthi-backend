@@ -1,4 +1,4 @@
-import { Label, LabelType } from '.prisma/client'
+import { Label } from '.prisma/client'
 import {
 	Body,
 	Controller,
