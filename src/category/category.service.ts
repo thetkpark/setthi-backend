@@ -55,13 +55,4 @@ export class CategoryService {
 		})
 		return category ? true : false
 	}
-
-	async getCategoryType(type: string): Promise<CategoryType> {
-		switch (type) {
-			case 'Income':
-				return CategoryType.INCOME
-			case 'Expense':
-				return CategoryType.EXPENSE
-		}
-	}
 }

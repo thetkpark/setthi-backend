@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsString } from 'class-validator'
+import { CategoryType } from '.prisma/client'
+import { IsEnum, IsNotEmpty, IsString, Matches } from 'class-validator'
 
 export class CategoryDto {
 	@IsNotEmpty()
@@ -6,10 +7,10 @@ export class CategoryDto {
 	name: string
 
 	@IsNotEmpty()
-	@IsString()
-	type: string
+	@IsEnum(CategoryType)
+	type: CategoryType
 
 	@IsNotEmpty()
-	@IsString()
+	@Matches(/\d{1,3}:\d{1,3}:\d{1,3}:\d{1,3}/)
 	color: string
 }

@@ -1,4 +1,4 @@
-import { Category, CategoryType } from '.prisma/client'
+import { Category } from '.prisma/client'
 import {
 	Body,
 	Controller,
@@ -23,8 +23,7 @@ export class CategoryController {
 	@UseGuards(JwtAuthGuard)
 	async createCategory(@Body() { name, type, color }: CategoryDto, @Request() req): Promise<Category[]> {
 		const userId = req.user.userId
-		const categoryType = await this.categoryService.getCategoryType(type)
-		await this.categoryService.createCategory(name, categoryType, color, userId)
+		await this.categoryService.createCategory(name, type, color, userId)
 		return this.categoryService.getCategories(userId)
 	}
 
@@ -46,8 +45,7 @@ export class CategoryController {
 		const categoryId = parseInt(params.id)
 		const isOwnCategory = await this.categoryService.checkCategoryOwnership(userId, categoryId)
 		if (!isOwnCategory) throw new ForbiddenException()
-		const categoryType: CategoryType = await this.categoryService.getCategoryType(type)
-		await this.categoryService.editCategory(categoryId, name, categoryType, color)
+		await this.categoryService.editCategory(categoryId, name, type, color)
 		return this.categoryService.getCategories(userId)
 	}
 
