@@ -23,8 +23,7 @@ export class LabelController {
 	@UseGuards(JwtAuthGuard)
 	async createLabel(@Body() { name, type }: LabelDto, @Request() req): Promise<Label[]> {
 		const userId = req.user.userId
-		const labelType: LabelType = await this.labelService.getLabelType(type)
-		await this.labelService.createLabel(name, labelType, userId)
+		await this.labelService.createLabel(name, type, userId)
 		return this.labelService.getLabels(userId)
 	}
 
@@ -42,8 +41,7 @@ export class LabelController {
 		const labelId = parseInt(params.id)
 		const isOwnLabel = await this.labelService.checkLabelOwnership(userId, labelId)
 		if (!isOwnLabel) throw new ForbiddenException()
-		const labelType: LabelType = await this.labelService.getLabelType(type)
-		await this.labelService.editLabel(labelId, name, labelType)
+		await this.labelService.editLabel(labelId, name, type)
 		return this.labelService.getLabels(userId)
 	}
 

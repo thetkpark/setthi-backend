@@ -51,13 +51,4 @@ export class LabelService {
 		})
 		return label ? true : false
 	}
-
-	async getLabelType(type: string): Promise<LabelType> {
-		switch (type) {
-			case 'Income':
-				return LabelType.INCOME
-			case 'Expense':
-				return LabelType.EXPENSE
-		}
-	}
 }

@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsString } from 'class-validator'
+import { LabelType } from '.prisma/client'
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator'
 
 export class LabelDto {
 	@IsNotEmpty()
@@ -6,6 +7,6 @@ export class LabelDto {
 	name: string
 
 	@IsNotEmpty()
-	@IsString()
-	type: string
+	@IsEnum(LabelType)
+	type: LabelType
 }
