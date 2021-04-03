@@ -6,5 +6,6 @@ import { SavingService } from './saving.service'
 @Module({
 	controllers: [SavingController],
 	providers: [SavingService, PrismaService],
+	exports: [SavingService],
 })
 export class SavingModule {}

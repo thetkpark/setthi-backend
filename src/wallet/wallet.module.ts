@@ -6,5 +6,6 @@ import { WalletService } from './wallet.service'
 @Module({
 	controllers: [WalletController],
 	providers: [WalletService, PrismaService],
+	exports: [WalletService],
 })
 export class WalletModule {}
