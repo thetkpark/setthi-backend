@@ -26,6 +26,7 @@ CREATE TABLE `Wallet` (
 CREATE TABLE `Label` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `label` VARCHAR(191) NOT NULL,
+    `type` ENUM('INCOME', 'EXPENSE') NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `owner_id` INTEGER NOT NULL,
@@ -50,11 +51,12 @@ CREATE TABLE `Category` (
 -- CreateTable
 CREATE TABLE `Saving` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(191) NOT NULL,
+    `title` VARCHAR(191) NOT NULL,
     `start_date` DATE NOT NULL,
     `end_date` DATE NOT NULL,
     `current_amount` DECIMAL(65, 30) NOT NULL DEFAULT 0,
-    `final_amount` DECIMAL(65, 30) NOT NULL,
+    `target_amount` DECIMAL(65, 30) NOT NULL,
+    `is_finish` BOOLEAN NOT NULL DEFAULT false,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `owner_id` INTEGER NOT NULL,
