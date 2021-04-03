@@ -1,7 +1,6 @@
-import { TransactionType } from '.prisma/client'
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common'
+import { Transaction, TransactionType } from '.prisma/client'
+import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
-import { PrismaService } from 'src/prisma.service'
 import { SavingService } from 'src/saving/saving.service'
 import { WalletService } from 'src/wallet/wallet.service'
 import { CreateTransactionDto } from './dto/create-transaction.dto'
@@ -15,12 +14,19 @@ export class TransactionController {
 		private savingService: SavingService
 	) {}
 
+	@Get('transactions')
+	@UseGuards(JwtAuthGuard)
+	async getTransactions(@Request() req): Promise<Transaction[]> {
+		const userId = req.user.userId
+		return this.transactionService.getTransactions(userId)
+	}
+
 	@Post('transaction')
 	@UseGuards(JwtAuthGuard)
 	async createTransaction(
 		@Body() { title, amount, category_id, date, saving_id, transaction_type, wallet_id }: CreateTransactionDto,
 		@Request() req
-	) {
+	): Promise<Transaction[]> {
 		const userId = req.user.userId
 		const ops: Promise<any>[] = []
 		if (transaction_type === TransactionType.SAVING) {
