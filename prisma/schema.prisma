@@ -64,6 +64,7 @@ model Saving {
   end_date       DateTime      @db.Date
   current_amount Decimal       @default(0)
   target_amount  Decimal
+  is_finish      Boolean       @default(false)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   owner          User          @relation(fields: [owner_id], references: [id])
