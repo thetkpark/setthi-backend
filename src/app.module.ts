@@ -8,6 +8,8 @@ import { TransactionService } from './transaction/transaction.service'
 import { TransactionModule } from './transaction/transaction.module'
 import { PrismaService } from './prisma.service'
 import { WalletModule } from './wallet/wallet.module'
+import { LabelModule } from './label/label.module'
+import { CategoryModule } from './category/category.module'
 
 @Module({
 	imports: [
@@ -18,6 +20,8 @@ import { WalletModule } from './wallet/wallet.module'
 		AuthModule,
 		TransactionModule,
 		WalletModule,
+		LabelModule,
+		CategoryModule,
 	],
 	controllers: [AppController],
 	providers: [AppService, TransactionService, PrismaService],
