@@ -38,7 +38,7 @@ export class SavingController {
 		return this.savingService.getSavings(userId)
 	}
 
-	@Patch('saving')
+	@Patch('saving/:id')
 	@UseGuards(JwtAuthGuard)
 	async editSaving(
 		@Param() params,
@@ -53,7 +53,7 @@ export class SavingController {
 		return this.savingService.getSavings(userId)
 	}
 
-	@Delete('saving')
+	@Delete('saving/:id')
 	@UseGuards(JwtAuthGuard)
 	async deleteSaving(@Param() params, @Request() req): Promise<Saving[]> {
 		const userId = req.user.userId
