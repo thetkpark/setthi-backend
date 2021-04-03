@@ -13,7 +13,7 @@ import { JwtStrategy } from './jwt.strategy'
 		PassportModule,
 		JwtModule.register({
 			secret: process.env.JWT_SECRET,
-			signOptions: { algorithm: 'HS256' },
+			signOptions: { algorithm: 'HS256', audience: 'mobile-user' },
 		}),
 	],
 	providers: [AuthService, LocalStrategy, JwtStrategy],
