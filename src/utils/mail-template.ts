@@ -1,5 +1,5 @@
-const mailTemplate = () => {
-  return `
+export const getMailTemplate = (token: string) => {
+	return `
   <!DOCTYPE html>
   <html lang="en">
   <head>
@@ -43,13 +43,11 @@ const mailTemplate = () => {
         <img src="https://i.ibb.co/dfhgmk2/Banker-Monochromatic-2.png" alt="setthi-logo" border="0" style="height: 160px">
         <h1 class="mt-10">Setthi reset password</h1>
         <h4 class="mt-10">This is your recovery key</h4>
-        <h1 style="letter-spacing: 5px; font-size: 4rem;" class="mt-10">123456</h1>
+        <h1 style="letter-spacing: 5px; font-size: 4rem;" class="mt-10">${token}</h1>
         <p class="mt-10" style="text-align: center;">Please enter this recovery key in the application to reset your password</p>
       </div>
     </div>
   </body>
   </html>
-  `;
-};
-
-module.exports = mailTemplate;
+  `
+}

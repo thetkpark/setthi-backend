@@ -5,6 +5,7 @@ import { User } from '.prisma/client'
 import { JwtService } from '@nestjs/jwt'
 import { MailgunService } from '@nextnm/nestjs-mailgun'
 import { nodeCache } from '../utils/node-cache'
+import { getMailTemplate } from '../utils/mail-template'
 
 @Injectable()
 export class AuthService {
@@ -44,8 +45,8 @@ export class AuthService {
 		return this.mailgunService.sendEmail({
 			from: 'no-reply@setthi.cscms.me',
 			to: user.email,
-			subject: 'Reset password for Setthi',
-			text: token,
+			subject: 'Setthi: Reset your password',
+			html: getMailTemplate(token),
 		})
 	}
 
