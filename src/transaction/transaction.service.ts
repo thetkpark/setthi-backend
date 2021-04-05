@@ -39,6 +39,11 @@ export class TransactionService {
 				createdAt: 'desc',
 			},
 			take: 10,
+			include: {
+				category: true,
+				saving: true,
+				wallet: true,
+			},
 		})
 	}
 }
