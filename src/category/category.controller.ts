@@ -1,5 +1,6 @@
 import { Category } from '.prisma/client'
 import {
+	BadRequestException,
 	Body,
 	Controller,
 	Delete,
@@ -23,6 +24,8 @@ export class CategoryController {
 	@UseGuards(JwtAuthGuard)
 	async createCategory(@Body() { name, type, color }: CategoryDto, @Request() req): Promise<Category[]> {
 		const userId = req.user.userId
+		const categoriesCount = await this.categoryService.countCategories(userId)
+		if (categoriesCount === 10) throw new BadRequestException('Limit number of categories exceeded')
 		await this.categoryService.createCategory(name, type, color, userId)
 		return this.categoryService.getCategories(userId)
 	}
