@@ -12,7 +12,7 @@ export class SavingService {
 				AND: [{ owner_id: userId }, { is_finish: false }],
 			},
 			orderBy: {
-				end_date: 'desc',
+				end_date: 'asc',
 			},
 		})
 	}
@@ -63,5 +63,14 @@ export class SavingService {
 			},
 		})
 		return saving ? true : false
+	}
+
+	async countSaving(ownerId: number): Promise<number> {
+		const count = await this.prisma.saving.count({
+			where: {
+				AND: [{ owner_id: ownerId }, { is_finish: false }],
+			},
+		})
+		return count
 	}
 }

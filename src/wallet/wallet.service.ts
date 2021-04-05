@@ -61,7 +61,6 @@ export class WalletService {
 				owner_id: ownerId,
 			},
 		})
-		if (!count) return 0
 		return count
 	}
 }
