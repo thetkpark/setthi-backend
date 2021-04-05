@@ -1,4 +1,4 @@
-import { prisma, TransactionType, Wallet } from '.prisma/client'
+import { TransactionType, Wallet } from '.prisma/client'
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma.service'
 
