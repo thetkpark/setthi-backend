@@ -1,5 +1,6 @@
 import { Wallet } from '.prisma/client'
 import {
+	BadRequestException,
 	Body,
 	Controller,
 	Delete,
@@ -24,6 +25,8 @@ export class WalletController {
 	@UseGuards(JwtAuthGuard)
 	async createWallet(@Body() { name, amount }: CreateWalletDto, @Request() req): Promise<Wallet[]> {
 		const userId = req.user.userId
+		const walletCount = await this.walletService.countWallets(userId)
+		if (walletCount === 5) throw new BadRequestException('Limit number of wallets exceeded')
 		await this.walletService.createWallet(name, amount, userId)
 		return this.walletService.getWallets(userId)
 	}
