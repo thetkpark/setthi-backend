@@ -50,7 +50,7 @@ export class AuthController {
 	@Post('check-token')
 	@HttpCode(200)
 	async checkTokenValidity(@Body() { token }: CheckResetTokenDto) {
-		const valid = this.authService.checkResetToken(token)
+		this.authService.checkResetToken(token)
 		return { token_validity: true }
 	}
 
