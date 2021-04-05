@@ -43,7 +43,7 @@ export class AuthService {
 	async sendResetPasswordEmail(user: User, token: string): Promise<boolean> {
 		nodeCache.set(token, user.id)
 		return this.mailgunService.sendEmail({
-			from: 'no-reply@setthi.cscms.me',
+			from: 'Setthi <no-reply@setthi.cscms.me>',
 			to: user.email,
 			subject: 'Setthi: Reset your password',
 			html: getMailTemplate(token),
