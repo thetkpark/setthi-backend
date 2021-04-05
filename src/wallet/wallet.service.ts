@@ -87,4 +87,12 @@ export class WalletService {
 		})
 		return count
 	}
+
+	async getWallet(walletId: number): Promise<Wallet> {
+		return this.prisma.wallet.findFirst({
+			where: {
+				id: walletId,
+			},
+		})
+	}
 }

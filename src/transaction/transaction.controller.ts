@@ -30,7 +30,9 @@ export class TransactionController {
 		const userId = req.user.userId
 		const ops: Promise<any>[] = []
 		if (transaction_type === TransactionType.EXPENSE_FROM_SAVING) {
+			if (!saving_id) throw new BadRequestException('Saving ID is required')
 			const saving = await this.savingService.getSaving(saving_id)
+			if (!saving) throw new BadRequestException('Saving is found')
 
 			if (!saving.is_finish) throw new BadRequestException('Saving is not fullfilled yet')
 			if (saving.current_amount.toNumber() !== amount)
@@ -38,7 +40,13 @@ export class TransactionController {
 
 			ops.push(this.savingService.resetCurrentAmount(saving_id))
 		} else if (transaction_type === TransactionType.SAVING) {
+			if (!wallet_id) throw new BadRequestException('Wallet ID is required')
+			const wallet = await this.walletService.getWallet(wallet_id)
+			if (!wallet) throw new BadRequestException('Wallet is not found')
+
+			if (!saving_id) throw new BadRequestException('Saving ID is required')
 			const saving = await this.savingService.getSaving(saving_id)
+			if (!saving) throw new BadRequestException('Saving is found')
 			const amountLeft = saving.target_amount.toNumber() - saving.current_amount.toNumber()
 
 			if (saving.is_finish) throw new BadRequestException('The saving is fullfilled')
@@ -47,6 +55,10 @@ export class TransactionController {
 
 			ops.push(this.savingService.addCurrentAmount(saving_id, amount))
 		} else {
+			if (!wallet_id) throw new BadRequestException('Wallet ID is required')
+			const wallet = await this.walletService.getWallet(wallet_id)
+			if (!wallet) throw new BadRequestException('Wallet is not found')
+
 			ops.push(this.walletService.updateWalletAmount(wallet_id, transaction_type, amount))
 		}
 
