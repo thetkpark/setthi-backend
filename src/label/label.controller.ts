@@ -1,5 +1,6 @@
 import { Label } from '.prisma/client'
 import {
+	BadRequestException,
 	Body,
 	Controller,
 	Delete,
@@ -23,6 +24,8 @@ export class LabelController {
 	@UseGuards(JwtAuthGuard)
 	async createLabel(@Body() { name, type }: LabelDto, @Request() req): Promise<Label[]> {
 		const userId = req.user.userId
+		const labelCount = await this.labelService.countLabel(userId)
+		if (labelCount === 10) throw new BadRequestException('Limit number of label exceeded')
 		await this.labelService.createLabel(name, type, userId)
 		return this.labelService.getLabels(userId)
 	}

@@ -1,5 +1,6 @@
 import { Saving } from '.prisma/client'
 import {
+	BadRequestException,
 	Body,
 	Controller,
 	Delete,
@@ -34,6 +35,8 @@ export class SavingController {
 		@Request() req
 	): Promise<Saving[]> {
 		const userId = req.user.userId
+		const savingCount = await this.savingService.countSaving(userId)
+		if (savingCount === 5) throw new BadRequestException('Limit number of saving exceeded')
 		await this.savingService.createSaving(title, target_amount, new Date(start_date), new Date(end_date), userId)
 		return this.savingService.getSavings(userId)
 	}

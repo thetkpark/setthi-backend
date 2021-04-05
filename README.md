@@ -168,6 +168,117 @@ Stop running docker container
       "message": "Unauthorized"
   }
   ```
+---
+### Request Password Reset
+
+- Path: `/api/auth/reset`
+
+- Method: `POST`
+
+- Request Body
+
+  ```json
+  {
+    "email": "example@example.com"
+  }
+  ```
+#### Success Response
+
+- Status Code: `201`
+
+
+#### Error Response
+
+- Status Code: `404`
+
+- Response Body
+
+  ```json
+  {
+      "statusCode": 404,
+      "message": "Account is not found",
+      "error": "Not Found"
+  }
+  ```
+
+---
+
+### Check reset password token
+
+- Path: `/api/auth/check-token`
+
+- Method: `POST`
+
+- Request Body
+
+  ```json
+  {
+    "token": "123456"
+  }
+  ```
+#### Success Response
+
+- Status Code: `200`
+
+#### Error Response
+
+- Status Code: `400`
+
+- Response Body
+
+  ```json
+  {
+      "statusCode": 400,
+      "message": "Token is expried or invalid",
+      "error": "Bad Request"
+  }
+  ```
+
+---
+
+### Reset password with token
+
+- Path: `/api/auth/reset`
+
+- Method: `PATCH`
+
+- Request Body
+
+  ```json
+  {
+    "token": "123456",
+    "password": "newPassword"
+  }
+  ```
+#### Success Response
+
+- Status Code: `200`
+
+- Response Body
+
+  ```json
+  {
+      "id": 4,
+      "createdAt": "",
+      "email": "",
+      "password": "",
+      "updatedAt": ""
+  }
+  ```
+
+#### Error Response
+
+- Status Code: `400`
+
+- Response Body
+
+  ```json
+  {
+      "statusCode": 400,
+      "message": "Token is expried or invalid",
+      "error": "Bad Request"
+  }
+  ```
 
 ---
 

@@ -1,23 +1,30 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { UsersService } from 'src/users/users.service'
 import * as bcrypt from 'bcrypt'
 import { User } from '.prisma/client'
 import { JwtService } from '@nestjs/jwt'
+import { MailgunService } from '@nextnm/nestjs-mailgun'
+import { nodeCache } from '../utils/node-cache'
+import { getMailTemplate } from '../utils/mail-template'
 
 @Injectable()
 export class AuthService {
-	constructor(private usersService: UsersService, private jwtService: JwtService) {}
+	constructor(
+		private usersService: UsersService,
+		private jwtService: JwtService,
+		private mailgunService: MailgunService
+	) {}
 
 	async validateUser(email: string, password: string): Promise<User> {
-		const user = await this.usersService.findByEmail(email)
+		const user = await this.findByEmail(email)
 		if (!user) return null
 		const isPasswordMatch = await bcrypt.compare(password, user.password)
 		if (!isPasswordMatch) return null
 		return user
 	}
 
-	async regisNewUser(email: string, password: string) {
-		const existingUser = await this.usersService.findByEmail(email)
+	async regisNewUser(email: string, password: string): Promise<User> {
+		const existingUser = await this.findByEmail(email)
 		if (existingUser) throw new BadRequestException('This email is used')
 		return this.usersService.createUser(email, password)
 	}
@@ -27,5 +34,31 @@ export class AuthService {
 			sub: user.id,
 		}
 		return this.jwtService.signAsync(payload)
+	}
+
+	async findByEmail(email: string): Promise<User> {
+		return this.usersService.findByEmail(email)
+	}
+
+	async sendResetPasswordEmail(user: User, token: string): Promise<boolean> {
+		nodeCache.set(token, user.id)
+		return this.mailgunService.sendEmail({
+			from: 'Setthi <no-reply@setthi.cscms.me>',
+			to: user.email,
+			subject: 'Setthi: Reset your password',
+			html: getMailTemplate(token),
+		})
+	}
+
+	checkResetToken(token: string): number {
+		const userId = nodeCache.get<string>(token)
+		if (!userId) throw new BadRequestException('Token is expried or invalid')
+		return parseInt(userId)
+	}
+
+	async changePassword(token: string, password: string): Promise<User> {
+		const userId = nodeCache.take<string>(token)
+		if (!userId) throw new BadRequestException('Token is expried or invalid')
+		return this.usersService.updatePassword(parseInt(userId), password)
 	}
 }

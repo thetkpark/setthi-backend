@@ -55,4 +55,12 @@ export class CategoryService {
 		})
 		return category ? true : false
 	}
+
+	async countCategories(ownerId: number): Promise<number> {
+		return this.prisma.category.count({
+			where: {
+				AND: [{ owner_id: ownerId }, { is_deleted: false }],
+			},
+		})
+	}
 }

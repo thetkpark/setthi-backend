@@ -21,6 +21,9 @@ export class WalletService {
 			where: {
 				owner_id: ownerId,
 			},
+			orderBy: {
+				createdAt: 'asc',
+			},
 		})
 	}
 
@@ -30,7 +33,6 @@ export class WalletService {
 				AND: [{ owner_id: ownerId }, { id: walletId }],
 			},
 		})
-		console.log(wallet)
 		return wallet ? true : false
 	}
 
@@ -75,5 +77,14 @@ export class WalletService {
 				id: walletId,
 			},
 		})
+	}
+
+	async countWallets(ownerId: number): Promise<number> {
+		const count = await this.prisma.wallet.count({
+			where: {
+				owner_id: ownerId,
+			},
+		})
+		return count
 	}
 }
