@@ -56,7 +56,6 @@ export class AuthController {
 
 	@Patch('reset')
 	async resetPassword(@Body() { token, password }: ResetPasswordDto) {
-		const userId = this.authService.checkResetToken(token)
-		return this.authService.changePassword(userId, password)
+		return this.authService.changePassword(token, password)
 	}
 }

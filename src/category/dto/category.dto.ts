@@ -1,9 +1,10 @@
 import { CategoryType } from '.prisma/client'
-import { IsEnum, IsNotEmpty, IsString, Matches } from 'class-validator'
+import { IsEnum, IsNotEmpty, IsString, Matches, MaxLength } from 'class-validator'
 
 export class CategoryDto {
 	@IsNotEmpty()
 	@IsString()
+	@MaxLength(20)
 	name: string
 
 	@IsNotEmpty()

@@ -51,4 +51,12 @@ export class LabelService {
 		})
 		return label ? true : false
 	}
+
+	async countLabel(ownerId: number): Promise<number> {
+		return this.prisma.label.count({
+			where: {
+				owner_id: ownerId,
+			},
+		})
+	}
 }

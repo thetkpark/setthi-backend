@@ -56,7 +56,9 @@ export class AuthService {
 		return parseInt(userId)
 	}
 
-	async changePassword(userId: number, password: string): Promise<User> {
-		return this.usersService.updatePassword(userId, password)
+	async changePassword(token: string, password: string): Promise<User> {
+		const userId = nodeCache.take<string>(token)
+		if (!userId) throw new BadRequestException('Token is expried or invalid')
+		return this.usersService.updatePassword(parseInt(userId), password)
 	}
 }
