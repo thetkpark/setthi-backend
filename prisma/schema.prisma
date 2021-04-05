@@ -104,4 +104,5 @@ enum TransactionType {
   INCOME
   EXPENSE
   SAVING
+  EXPENSE_FROM_SAVING
 }
