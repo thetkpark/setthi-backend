@@ -33,7 +33,6 @@ export class WalletService {
 				AND: [{ owner_id: ownerId }, { id: walletId }],
 			},
 		})
-		console.log(wallet)
 		return wallet ? true : false
 	}
 
