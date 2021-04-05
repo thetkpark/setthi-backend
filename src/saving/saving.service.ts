@@ -48,7 +48,7 @@ export class SavingService {
 		})
 	}
 
-	async updateCurrentAmount(savingId: number, amount: number): Promise<Saving> {
+	async addCurrentAmount(savingId: number, amount: number): Promise<Saving> {
 		// TODO: Handle case when transaction to the finished saving
 		const saving = await this.prisma.saving.findFirst({ where: { id: savingId } })
 		const savingAmount = saving.current_amount.toNumber() + amount
@@ -63,6 +63,17 @@ export class SavingService {
 				id: savingId,
 			},
 			data: updateData,
+		})
+	}
+
+	async resetCurrentAmount(savingId: number): Promise<Saving> {
+		return this.prisma.saving.update({
+			where: {
+				id: savingId,
+			},
+			data: {
+				current_amount: 0,
+			},
 		})
 	}
 
@@ -90,5 +101,13 @@ export class SavingService {
 			},
 		})
 		return count
+	}
+
+	async getSaving(savingId: number): Promise<Saving> {
+		return await this.prisma.saving.findFirst({
+			where: {
+				id: savingId,
+			},
+		})
 	}
 }

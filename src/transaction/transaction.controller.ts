@@ -1,5 +1,5 @@
 import { Transaction, TransactionType } from '.prisma/client'
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common'
+import { BadRequestException, Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { SavingService } from 'src/saving/saving.service'
 import { WalletService } from 'src/wallet/wallet.service'
@@ -14,11 +14,11 @@ export class TransactionController {
 		private savingService: SavingService
 	) {}
 
-	@Get('transactions')
+	@Get('timeline')
 	@UseGuards(JwtAuthGuard)
 	async getTransactions(@Request() req): Promise<Transaction[]> {
 		const userId = req.user.userId
-		return this.transactionService.getTransactions(userId)
+		return this.transactionService.getTimelineTransactions(userId)
 	}
 
 	@Post('transaction')
@@ -29,10 +29,27 @@ export class TransactionController {
 	): Promise<Transaction[]> {
 		const userId = req.user.userId
 		const ops: Promise<any>[] = []
-		if (transaction_type === TransactionType.SAVING) {
-			ops.push(this.savingService.updateCurrentAmount(saving_id, amount))
+		if (transaction_type === TransactionType.EXPENSE_FROM_SAVING) {
+			const saving = await this.savingService.getSaving(saving_id)
+
+			if (!saving.is_finish) throw new BadRequestException('Saving is not fullfilled yet')
+			if (saving.current_amount.toNumber() !== amount)
+				throw new BadRequestException('The amount does not match the amount of saving')
+
+			ops.push(this.savingService.resetCurrentAmount(saving_id))
+		} else if (transaction_type === TransactionType.SAVING) {
+			const saving = await this.savingService.getSaving(saving_id)
+			const amountLeft = saving.target_amount.toNumber() - saving.current_amount.toNumber()
+
+			if (saving.is_finish) throw new BadRequestException('The saving is fullfilled')
+			if (amountLeft < amount)
+				throw new BadRequestException(`This saving only need ${amountLeft} to be fullfilled`)
+
+			ops.push(this.savingService.addCurrentAmount(saving_id, amount))
+		} else {
+			ops.push(this.walletService.updateWalletAmount(wallet_id, transaction_type, amount))
 		}
-		ops.push(this.walletService.updateWalletAmount(wallet_id, transaction_type, amount))
+
 		ops.push(
 			this.transactionService.createTransaction(
 				title,
@@ -45,7 +62,9 @@ export class TransactionController {
 				userId
 			)
 		)
+
 		await Promise.all(ops)
-		return this.transactionService.getTransactions(userId)
+
+		return this.transactionService.getTimelineTransactions(userId)
 	}
 }

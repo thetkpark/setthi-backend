@@ -22,7 +22,7 @@ export class CreateTransactionDto {
 	@IsNumber()
 	category_id: number
 
-	@IsNotEmpty()
+	@IsOptional()
 	@IsNumber()
 	wallet_id: number
 

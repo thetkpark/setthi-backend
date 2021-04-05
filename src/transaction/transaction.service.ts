@@ -30,11 +30,15 @@ export class TransactionService {
 		})
 	}
 
-	async getTransactions(owner_id: number): Promise<Transaction[]> {
+	async getTimelineTransactions(owner_id: number): Promise<Transaction[]> {
 		return this.prisma.transaction.findMany({
 			where: {
 				owner_id,
 			},
+			orderBy: {
+				createdAt: 'desc',
+			},
+			take: 10,
 		})
 	}
 }
