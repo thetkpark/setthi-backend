@@ -7,15 +7,16 @@ import {
 	BadRequestException,
 	NotFoundException,
 	InternalServerErrorException,
-	Get,
 	HttpCode,
+	Patch,
 } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { CreateUserDto } from './dto/create-user.dto'
-import { ResetPasswordDto } from './dto/reset-password.dto'
+import { RequestResetPasswordDto } from './dto/request-reset-password.dto'
 import { LocalAuthGuard } from './local-auth.guard'
 import { generateResetToken } from '../utils/nanoid'
 import { CheckResetTokenDto } from './dto/check-reset-token.dto'
+import { ResetPasswordDto } from './dto/reset-password.dto'
 
 @Controller('api/auth')
 export class AuthController {
@@ -38,7 +39,7 @@ export class AuthController {
 	}
 
 	@Post('reset')
-	async resetPassword(@Body() { email }: ResetPasswordDto) {
+	async requestResetPassword(@Body() { email }: RequestResetPasswordDto) {
 		const user = await this.authService.findByEmail(email)
 		if (!user) throw new NotFoundException('Account is not found')
 		const token = generateResetToken()
@@ -50,7 +51,12 @@ export class AuthController {
 	@HttpCode(200)
 	async checkTokenValidity(@Body() { token }: CheckResetTokenDto) {
 		const valid = this.authService.checkResetToken(token)
-		if (!valid) throw new BadRequestException('Token is expried or invalid')
 		return { token_validity: true }
+	}
+
+	@Patch('reset')
+	async resetPassword(@Body() { token, password }: ResetPasswordDto) {
+		const userId = this.authService.checkResetToken(token)
+		return this.authService.changePassword(userId, password)
 	}
 }

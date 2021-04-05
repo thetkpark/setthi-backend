@@ -49,9 +49,13 @@ export class AuthService {
 		})
 	}
 
-	checkResetToken(token: string): boolean {
-		const userId = nodeCache.get(token)
-		if (!userId) return false
-		return true
+	checkResetToken(token: string): number {
+		const userId = nodeCache.get<string>(token)
+		if (!userId) throw new BadRequestException('Token is expried or invalid')
+		return parseInt(userId)
+	}
+
+	async changePassword(userId: number, password: string): Promise<User> {
+		return this.usersService.updatePassword(userId, password)
 	}
 }
