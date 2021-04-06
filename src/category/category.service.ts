@@ -23,11 +23,10 @@ export class CategoryService {
 		})
 	}
 
-	async editCategory(categoryId: number, name: string, type: CategoryType, color: string): Promise<Category> {
+	async editCategory(categoryId: number, name: string, color: string): Promise<Category> {
 		return this.prisma.category.update({
 			data: {
 				name,
-				type,
 				color,
 			},
 			where: {
@@ -51,6 +50,15 @@ export class CategoryService {
 		const category = await this.prisma.category.findFirst({
 			where: {
 				AND: [{ owner_id: ownerId }, { id: categoryId }],
+			},
+		})
+		return category ? true : false
+	}
+
+	async checkCategoryOwnershipAndType(ownerId: number, categoryId: number, type: CategoryType): Promise<boolean> {
+		const category = await this.prisma.category.findFirst({
+			where: {
+				AND: [{ owner_id: ownerId }, { id: categoryId }, { type }],
 			},
 		})
 		return category ? true : false

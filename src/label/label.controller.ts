@@ -7,6 +7,7 @@ import {
 	ForbiddenException,
 	Get,
 	Param,
+	ParseIntPipe,
 	Patch,
 	Post,
 	Request,
@@ -14,6 +15,7 @@ import {
 } from '@nestjs/common'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { LabelDto } from './dto/label.dto'
+import { LabelValidationPipe } from './label-validation.pipe'
 import { LabelService } from './label.service'
 
 @Controller('api')
@@ -39,20 +41,22 @@ export class LabelController {
 
 	@Patch('label/:id')
 	@UseGuards(JwtAuthGuard)
-	async editLabel(@Param() params, @Body() { name, type }: LabelDto, @Request() req): Promise<Label[]> {
-		const userId = req.user.userId
-		const labelId = parseInt(params.id)
-		const isOwnLabel = await this.labelService.checkLabelOwnership(userId, labelId)
+	async editLabel(
+		@Param('id', LabelValidationPipe) label: Label,
+		@Body() { name, type }: LabelDto,
+		@Request() req
+	): Promise<Label[]> {
+		const userId: number = req.user.userId
+		const isOwnLabel = userId === label.owner_id
 		if (!isOwnLabel) throw new ForbiddenException()
-		await this.labelService.editLabel(labelId, name, type)
+		await this.labelService.editLabel(label.id, name, type)
 		return this.labelService.getLabels(userId)
 	}
 
 	@Delete('label/:id')
 	@UseGuards(JwtAuthGuard)
-	async deleteLabel(@Param() params, @Request() req): Promise<Label[]> {
+	async deleteLabel(@Param('id', ParseIntPipe) labelId: number, @Request() req): Promise<Label[]> {
 		const userId = req.user.userId
-		const labelId = parseInt(params.id)
 		const isOwnLabel = await this.labelService.checkLabelOwnership(userId, labelId)
 		if (!isOwnLabel) throw new ForbiddenException()
 		await this.labelService.deleteLabel(labelId)

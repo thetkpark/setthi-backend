@@ -7,6 +7,7 @@ import {
 	ForbiddenException,
 	Get,
 	Param,
+	ParseIntPipe,
 	Patch,
 	Post,
 	Request,
@@ -39,8 +40,11 @@ export class WalletController {
 
 	@Patch('wallet/:id')
 	@UseGuards(JwtAuthGuard)
-	async editWallet(@Param() params, @Body() { name }: EditWalletDto, @Request() req): Promise<Wallet[]> {
-		const walletId = parseInt(params.id)
+	async editWallet(
+		@Param('id', ParseIntPipe) walletId: number,
+		@Body() { name }: EditWalletDto,
+		@Request() req
+	): Promise<Wallet[]> {
 		const isOwnWallet = await this.walletService.checkWalletOwnership(req.user.userId, walletId)
 		if (!isOwnWallet) throw new ForbiddenException()
 		await this.walletService.editWallet(walletId, name)
@@ -49,8 +53,7 @@ export class WalletController {
 
 	@Delete('wallet/:id')
 	@UseGuards(JwtAuthGuard)
-	async deleteWallet(@Param() params, @Request() req): Promise<Wallet[]> {
-		const walletId = parseInt(params.id)
+	async deleteWallet(@Param('id', ParseIntPipe) walletId: number, @Request() req): Promise<Wallet[]> {
 		const isOwnWallet = await this.walletService.checkWalletOwnership(req.user.userId, walletId)
 		if (!isOwnWallet) throw new ForbiddenException()
 		await this.walletService.deleteWallet(walletId)

@@ -82,8 +82,8 @@ model Transaction {
   updatedAt        DateTime        @updatedAt
   category         Category        @relation(fields: [category_id], references: [id])
   category_id      Int
-  wallet           Wallet          @relation(fields: [wallet_id], references: [id])
-  wallet_id        Int
+  wallet           Wallet?          @relation(fields: [wallet_id], references: [id])
+  wallet_id        Int?
   saving           Saving?         @relation(fields: [saving_id], references: [id])
   saving_id        Int?
   owner            User            @relation(fields: [owner_id], references: [id])
@@ -104,4 +104,5 @@ enum TransactionType {
   INCOME
   EXPENSE
   SAVING
+  EXPENSE_FROM_SAVING
 }
