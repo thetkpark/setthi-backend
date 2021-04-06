@@ -55,11 +55,11 @@ export class LabelController {
 
 	@Delete('label/:id')
 	@UseGuards(JwtAuthGuard)
-	async deleteLabel(@Param('id', ParseIntPipe) labelId: number, @Request() req): Promise<Label[]> {
+	async deleteLabel(@Param('id', LabelValidationPipe) label: Label, @Request() req): Promise<Label[]> {
 		const userId = req.user.userId
-		const isOwnLabel = await this.labelService.checkLabelOwnership(userId, labelId)
+		const isOwnLabel = await this.labelService.checkLabelOwnership(userId, label.id)
 		if (!isOwnLabel) throw new ForbiddenException()
-		await this.labelService.deleteLabel(labelId)
+		await this.labelService.deleteLabel(label.id)
 		return this.labelService.getLabels(userId)
 	}
 }
