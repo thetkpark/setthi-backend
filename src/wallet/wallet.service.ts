@@ -134,32 +134,37 @@ export class WalletService {
 		})
 
 		let max = 0
+		let min = 0
 		const data = []
 		let dateRunner = dayjs(fromDate).add(1, 'day')
 
 		for (let i = 0; i < transaction.length; i++) {
-			console.log(transaction[i])
 			const sumAmount = transaction[i].sum.amount.toNumber()
 			if (sumAmount > max) max = sumAmount
+			if (sumAmount < min) min = sumAmount
 
 			const transactionDate = dayjs(transaction[i].date)
 			while (!dateRunner.isSame(transactionDate)) {
 				data.push({
-					date: transactionDate.toDate(),
+					date: dateRunner.format('ddd'),
 					amount: 0,
 				})
 				dateRunner = dateRunner.add(1, 'day')
 			}
 
 			data.push({
-				date: transactionDate.toDate(),
+				date: dateRunner.format('ddd'),
 				amount: sumAmount,
 			})
 			dateRunner = dateRunner.add(1, 'day')
 		}
 
+		const index = Math.floor(max.toString().length * 0.7)
+		const submax = max / Math.pow(10, index)
+		const modmax = Math.ceil(submax) * Math.pow(10, index)
+
 		return {
-			max,
+			top: modmax,
 			data,
 		}
 	}
