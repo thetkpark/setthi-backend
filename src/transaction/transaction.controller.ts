@@ -13,6 +13,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { CategoryService } from 'src/category/category.service'
 import { SavingService } from 'src/saving/saving.service'
 import { WalletService } from 'src/wallet/wallet.service'
+import { CreateExpenseSavingTransactionDto } from './dto/create-expense-saving-transaction.dto'
 import { CreateIncomeExpenseTransactionDto } from './dto/create-income-expense-transaction.dto'
 import { CreateSavingTransactionDto } from './dto/create-saving-transaction.dto'
 import { TransactionService } from './transaction.service'
@@ -134,6 +135,46 @@ export class TransactionController {
 			),
 			this.walletService.updateWalletAmount(wallet_id, TransactionType.SAVING, amount),
 			this.savingService.addCurrentAmount(saving_id, amount),
+		]
+
+		await Promise.all(transactionOps)
+
+		return this.transactionService.getTimelineTransactions(userId)
+	}
+
+	@Post('transaction/expense-saving')
+	@UseGuards(JwtAuthGuard)
+	async createExpanseSavingTransaction(
+		@Body()
+		{ title, date, amount, category_id, saving_id }: CreateExpenseSavingTransactionDto,
+		@Request() req
+	): Promise<Transaction[]> {
+		const userId = req.user.userId
+
+		const ownershipOps: Promise<boolean>[] = [
+			this.categoryService.checkCategoryOwnershipAndType(userId, category_id, CategoryType.EXPENSE),
+			this.savingService.checkSavingOwnershipAndFinish(userId, saving_id),
+		]
+		const ownershipCheck = await Promise.all(ownershipOps)
+		console.log(ownershipCheck)
+		if (ownershipCheck.some(ele => ele === false)) throw new ForbiddenException()
+
+		const saving = await this.savingService.getSaving(saving_id)
+		if (saving.current_amount.toNumber() !== amount)
+			throw new BadRequestException('The amount is does not match the saving amount')
+
+		const transactionOps: Promise<any>[] = [
+			this.transactionService.createTransaction(
+				title,
+				amount,
+				category_id,
+				new Date(date),
+				saving_id,
+				TransactionType.EXPENSE_FROM_SAVING,
+				null,
+				userId
+			),
+			this.savingService.resetCurrentAmount(saving_id),
 		]
 
 		await Promise.all(transactionOps)

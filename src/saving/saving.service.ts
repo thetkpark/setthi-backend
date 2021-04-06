@@ -118,4 +118,22 @@ export class SavingService {
 		})
 		return saving ? true : false
 	}
+
+	async checkSavingOwnershipAndFinish(ownerId: number, savingId: number): Promise<boolean> {
+		const saving = await this.prisma.saving.findFirst({
+			where: {
+				AND: [
+					{ owner_id: ownerId },
+					{ id: savingId },
+					{ is_finish: true },
+					{
+						current_amount: {
+							not: 0,
+						},
+					},
+				],
+			},
+		})
+		return saving ? true : false
+	}
 }
