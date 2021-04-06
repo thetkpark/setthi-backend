@@ -95,4 +95,16 @@ export class WalletService {
 			},
 		})
 	}
+
+	async getTotalBalance(ownerId: number): Promise<number> {
+		const balance = await this.prisma.wallet.aggregate({
+			sum: {
+				amount: true,
+			},
+			where: {
+				owner_id: ownerId,
+			},
+		})
+		return balance.sum.amount.toNumber()
+	}
 }

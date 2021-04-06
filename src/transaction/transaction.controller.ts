@@ -1,4 +1,4 @@
-import { CategoryType, Transaction, TransactionType } from '.prisma/client'
+import { CategoryType, TransactionType } from '.prisma/client'
 import {
 	BadRequestException,
 	Body,
@@ -27,11 +27,17 @@ export class TransactionController {
 		private categoryService: CategoryService
 	) {}
 
+	async getTimelineScreenData(userId: number) {
+		const transactions = await this.transactionService.getTimelineTransactions(userId)
+		const balance = await this.walletService.getTotalBalance(userId)
+		return { balance, transactions }
+	}
+
 	@Get('timeline')
 	@UseGuards(JwtAuthGuard)
-	async getTransactions(@Request() req): Promise<Transaction[]> {
+	async getTransactions(@Request() req) {
 		const userId = req.user.userId
-		return this.transactionService.getTimelineTransactions(userId)
+		return this.getTimelineScreenData(userId)
 	}
 
 	@Post('transaction/income')
@@ -40,7 +46,7 @@ export class TransactionController {
 		@Body()
 		{ title, date, amount, category_id, wallet_id }: CreateIncomeExpenseTransactionDto,
 		@Request() req
-	): Promise<Transaction[]> {
+	) {
 		const userId = req.user.userId
 		const ownershipOps: Promise<boolean>[] = [
 			this.walletService.checkWalletOwnership(userId, wallet_id),
@@ -64,7 +70,7 @@ export class TransactionController {
 		]
 		await Promise.all(transactionOps)
 
-		return this.transactionService.getTimelineTransactions(userId)
+		return this.getTimelineScreenData(userId)
 	}
 
 	@Post('transaction/expense')
@@ -73,7 +79,7 @@ export class TransactionController {
 		@Body()
 		{ title, date, amount, category_id, wallet_id }: CreateIncomeExpenseTransactionDto,
 		@Request() req
-	): Promise<Transaction[]> {
+	) {
 		const userId = req.user.userId
 		const ownershipOps: Promise<boolean>[] = [
 			this.walletService.checkWalletOwnership(userId, wallet_id),
@@ -98,7 +104,7 @@ export class TransactionController {
 
 		await Promise.all(transactionOps)
 
-		return this.transactionService.getTimelineTransactions(userId)
+		return this.getTimelineScreenData(userId)
 	}
 
 	@Post('transaction/saving')
@@ -107,7 +113,7 @@ export class TransactionController {
 		@Body()
 		{ title, date, amount, category_id, wallet_id, saving_id }: CreateSavingTransactionDto,
 		@Request() req
-	): Promise<Transaction[]> {
+	) {
 		const userId = req.user.userId
 
 		const ownershipOps: Promise<boolean>[] = [
@@ -139,7 +145,7 @@ export class TransactionController {
 
 		await Promise.all(transactionOps)
 
-		return this.transactionService.getTimelineTransactions(userId)
+		return this.getTimelineScreenData(userId)
 	}
 
 	@Post('transaction/expense-saving')
@@ -148,7 +154,7 @@ export class TransactionController {
 		@Body()
 		{ title, date, amount, category_id, saving_id }: CreateExpenseSavingTransactionDto,
 		@Request() req
-	): Promise<Transaction[]> {
+	) {
 		const userId = req.user.userId
 
 		const ownershipOps: Promise<boolean>[] = [
@@ -178,6 +184,6 @@ export class TransactionController {
 
 		await Promise.all(transactionOps)
 
-		return this.transactionService.getTimelineTransactions(userId)
+		return this.getTimelineScreenData(userId)
 	}
 }
