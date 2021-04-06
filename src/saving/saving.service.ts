@@ -48,6 +48,34 @@ export class SavingService {
 		})
 	}
 
+	async addCurrentAmount(savingId: number, amount: number): Promise<Saving> {
+		const saving = await this.prisma.saving.findFirst({ where: { id: savingId } })
+		const savingAmount = saving.current_amount.toNumber() + amount
+		const targetAmount = saving.target_amount.toNumber()
+		const updateData = {
+			current_amount: savingAmount,
+			is_finish: false,
+		}
+		if (savingAmount === targetAmount) updateData.is_finish = true
+		return this.prisma.saving.update({
+			where: {
+				id: savingId,
+			},
+			data: updateData,
+		})
+	}
+
+	async resetCurrentAmount(savingId: number): Promise<Saving> {
+		return this.prisma.saving.update({
+			where: {
+				id: savingId,
+			},
+			data: {
+				current_amount: 0,
+			},
+		})
+	}
+
 	async deleteSaving(id: number): Promise<Saving> {
 		return this.prisma.saving.delete({
 			where: {
@@ -72,5 +100,40 @@ export class SavingService {
 			},
 		})
 		return count
+	}
+
+	async getSaving(savingId: number): Promise<Saving> {
+		return await this.prisma.saving.findFirst({
+			where: {
+				id: savingId,
+			},
+		})
+	}
+
+	async checkSavingOwnershipAndNotFinish(ownerId: number, savingId: number): Promise<boolean> {
+		const saving = await this.prisma.saving.findFirst({
+			where: {
+				AND: [{ owner_id: ownerId }, { id: savingId }, { is_finish: false }],
+			},
+		})
+		return saving ? true : false
+	}
+
+	async checkSavingOwnershipAndFinish(ownerId: number, savingId: number): Promise<boolean> {
+		const saving = await this.prisma.saving.findFirst({
+			where: {
+				AND: [
+					{ owner_id: ownerId },
+					{ id: savingId },
+					{ is_finish: true },
+					{
+						current_amount: {
+							not: 0,
+						},
+					},
+				],
+			},
+		})
+		return saving ? true : false
 	}
 }

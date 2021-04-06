@@ -16,6 +16,7 @@ import {
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { CategoryService } from './category.service'
 import { CategoryDto } from './dto/category.dto'
+import { EditCategoryDto } from './dto/edit-category.dto'
 
 @Controller('api')
 export class CategoryController {
@@ -42,13 +43,13 @@ export class CategoryController {
 	@UseGuards(JwtAuthGuard)
 	async editCategory(
 		@Param('id', ParseIntPipe) categoryId: number,
-		@Body() { name, type, color }: CategoryDto,
+		@Body() { name, color }: EditCategoryDto,
 		@Request() req
 	): Promise<Category[]> {
 		const userId = req.user.userId
 		const isOwnCategory = await this.categoryService.checkCategoryOwnership(userId, categoryId)
 		if (!isOwnCategory) throw new ForbiddenException()
-		await this.categoryService.editCategory(categoryId, name, type, color)
+		await this.categoryService.editCategory(categoryId, name, color)
 		return this.categoryService.getCategories(userId)
 	}
 

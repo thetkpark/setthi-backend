@@ -301,16 +301,51 @@ Stop running docker container
 
   ```json
   {
-    "balance": <>,
+    "balance": <Double>,
     "transaction": [
-      // Sorted by createdAt from lastest to oldest
-      // Only latest 10 transaction
-      "id": <Integer>,
-      "title": <String>,
-      "amount": <Double>,
-      "transaction_type": "INCOME" | "EXPENSE" | "SAVING",
-      "date": <Datetime>,
-      ...
+      {
+          "id": 30,
+          "title": "Test Transaction Saving",
+          "amount": "100",
+          "date": "2021-04-06T00:00:00.000Z",
+          "transaction_type": "SAVING",
+          "createdAt": "2021-04-06T07:44:13.800Z",
+          "updatedAt": "2021-04-06T07:44:13.801Z",
+          "category_id": 12,
+          "wallet_id": 1,
+          "saving_id": 3,
+          "owner_id": 2,
+          "category": {
+            "id": 12,
+            "name": "Test Expense",
+            "type": "EXPENSE",
+            "color": "255:255:2:32",
+            "is_deleted": false,
+            "createdAt": "2021-04-06T06:58:22.959Z",
+            "updatedAt": "2021-04-06T06:58:22.960Z",
+            "owner_id": 2
+        	},
+          "saving": {
+            "id": 3,
+            "title": "Saving 4",
+            "start_date": "2021-04-03T00:00:00.000Z",
+            "end_date": "2022-04-03T00:00:00.000Z",
+            "current_amount": "0",
+            "target_amount": "1200",
+            "is_finish": true,
+            "createdAt": "2021-04-05T09:59:28.383Z",
+            "updatedAt": "2021-04-06T08:00:26.898Z",
+            "owner_id": 2
+          },
+          "wallet": {
+            "id": 1,
+            "name": "Wallet Test",
+            "amount": "38800",
+            "createdAt": "2021-04-03T10:10:50.596Z",
+            "updatedAt": "2021-04-06T07:44:13.831Z",
+            "owner_id": 2
+          }
+       }
     ]
   }
   ```
@@ -320,44 +355,11 @@ Stop running docker container
 - Response Body: NONE
 ---
 
-### Get all Transactions
+### Create new income transaction
 
-- Path: `/api/transactions`
-- Method: `GET`
-- Request Header
-  - Authorization: Bearer <token>
+- Path: `/api/transaction/income`
 
-#### Success Response
-
-- Status Code: `200`
-
-- Response Body
-
-  ```json
-  [
-      // Sorted by createdAt from lastest to oldest
-      // Only latest 10 transaction
-      "id": <Integer>,
-      "title": <String>,
-      "amount": <Double>,
-      "transaction_type": "INCOME" | "EXPENSE" | "SAVING",
-      "date": <Datetime>,
-      ...
-  ]
-  ```
-
-#### Error Response
-
-- Status Code: `401`
-- Response Body: NONE
-
----
-
-### Create new transaction
-
-- Path: `/api/transaction`
-
-- Method: `GET`
+- Method: `POST`
 
 - Request Header
 
@@ -367,40 +369,147 @@ Stop running docker container
 
   ```json
   {
-    "title": <String>,
-    "wallet_id": <Integer>,
-    "amount": <Double>,
-    "transaction_type": "INCOME" | "EXPENSE" | "SAVING",
-    "category_id": <Integer>,
-    "date": <Date>
+      "title": "Test Transaction Income",
+      "amount": 50000,
+      "date": "2021-04-03",
+      "category_id": 1,
+      "wallet_id": 2
   }
   ```
 
 #### Success Response
 
-- Status Code: `200`
+- Status Code: `201`
 
-- Response Body
+- Response Body: `SAME as GET /api/timeline`
 
-  ```json
-  {
-    "balance": <>,
-    "transaction": [
-      // Sorted by createdAt from lastest to oldest
-      // Only latest 10 transaction
-      "id": <Integer>,
-      "title": <String>,
-      "amount": <Double>,
-      "transaction_type": "INCOME" | "EXPENSE" | "SAVING",
-      "date": <Datetime>,
-      ...
-    ]
-  }
-  ```
 
 #### Error Response
 
+- Status Code: `400`
+- Response Body: NONE
 - Status Code: `401`
+- Response Body: NONE
+- Status Code: `403`
+- Response Body: NONE
+
+---
+
+### Create new expense transaction
+
+- Path: `/api/transaction/expense`
+
+- Method: `POST`
+
+- Request Header
+
+  - Authorization: Bearer <token>
+
+- Request Body
+
+  ```json
+  {
+      "title": "Test Transaction Expe4nse",
+      "amount": 1200,
+      "date": "2021-04-06",
+      "category_id": 12,
+      "wallet_id": 1
+  }
+  ```
+
+#### Success Response
+
+- Status Code: `201`
+
+- Response Body: `SAME as GET /api/timeline`
+
+#### Error Response
+
+- Status Code: `400`
+- Response Body: NONE
+- Status Code: `401`
+- Response Body: NONE
+- Status Code: `403`
+- Response Body: NONE
+
+---
+
+### Create new expense transaction
+
+- Path: `/api/transaction/saving`
+
+- Method: `POST`
+
+- Request Header
+
+  - Authorization: Bearer <token>
+
+- Request Body
+
+  ```json
+  {
+      "title": "Test Transaction Saving",
+      "amount": 100,
+      "date": "2021-04-06",
+      "category_id": 12,
+      "wallet_id": 1,
+      "saving_id": 3
+  }
+  ```
+
+#### Success Response
+
+- Status Code: `201`
+
+- Response Body: `SAME as GET /api/timeline`
+
+#### Error Response
+
+- Status Code: `400`
+- Response Body: NONE
+- Status Code: `401`
+- Response Body: NONE
+- Status Code: `403`
+- Response Body: NONE
+
+---
+
+### Create new expense transaction
+
+- Path: `/api/transaction/expense-saving`
+
+- Method: `POST`
+
+- Request Header
+
+  - Authorization: Bearer <token>
+
+- Request Body
+
+  ```json
+  {
+      "title": "Test Transaction Saving",
+      "amount": 1200,
+      "date": "2021-04-06",
+      "category_id": 12,
+      "wallet_id": 1,
+      "saving_id": 3
+  }
+  ```
+
+#### Success Response
+
+- Status Code: `201`
+
+- Response Body: `SAME as GET /api/timeline`
+
+#### Error Response
+
+- Status Code: `400`
+- Response Body: NONE
+- Status Code: `401`
+- Response Body: NONE
+- Status Code: `403`
 - Response Body: NONE
 
 ---
