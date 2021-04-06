@@ -1,7 +1,9 @@
 import { TransactionType, Wallet } from '.prisma/client'
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma.service'
-
+import * as dayjs from 'dayjs'
+import * as utc from 'dayjs/plugin/utc'
+dayjs.extend(utc)
 @Injectable()
 export class WalletService {
 	constructor(private prisma: PrismaService) {}
@@ -109,5 +111,61 @@ export class WalletService {
 			},
 		})
 		return balance.sum.amount.toNumber()
+	}
+
+	async getExpenseGraphData(owner_id: number) {
+		const fromDate = dayjs().utc().startOf('day').subtract(7, 'day').toDate()
+		const transaction = await this.prisma.transaction.groupBy({
+			by: ['date'],
+			having: {
+				date: {
+					gt: fromDate,
+				},
+			},
+			where: {
+				AND: [{ owner_id }, { transaction_type: TransactionType.EXPENSE }],
+			},
+			sum: {
+				amount: true,
+			},
+			orderBy: {
+				date: 'asc',
+			},
+		})
+
+		let max = 0
+		let min = 0
+		const data = []
+		let dateRunner = dayjs(fromDate).add(1, 'day')
+
+		for (let i = 0; i < transaction.length; i++) {
+			const sumAmount = transaction[i].sum.amount.toNumber()
+			if (sumAmount > max) max = sumAmount
+			if (sumAmount < min) min = sumAmount
+
+			const transactionDate = dayjs(transaction[i].date)
+			while (!dateRunner.isSame(transactionDate)) {
+				data.push({
+					date: dateRunner.format('ddd'),
+					amount: 0,
+				})
+				dateRunner = dateRunner.add(1, 'day')
+			}
+
+			data.push({
+				date: dateRunner.format('ddd'),
+				amount: sumAmount,
+			})
+			dateRunner = dateRunner.add(1, 'day')
+		}
+
+		const index = Math.floor(max.toString().length * 0.7)
+		const submax = max / Math.pow(10, index)
+		const modmax = Math.ceil(submax) * Math.pow(10, index)
+
+		return {
+			top: modmax,
+			data,
+		}
 	}
 }

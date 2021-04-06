@@ -7,7 +7,6 @@ import {
 	ForbiddenException,
 	Get,
 	Param,
-	ParseIntPipe,
 	Patch,
 	Post,
 	Request,
@@ -17,6 +16,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { CreateWalletDto } from './dto/create-wallet.dto'
 import { EditWalletDto } from './dto/edit-wallet.dto'
 import { WalletService } from './wallet.service'
+import { WalletValidationPipe } from './wallet-validation.pipe'
 
 @Controller('api')
 export class WalletController {
@@ -34,29 +34,32 @@ export class WalletController {
 
 	@Get('wallets')
 	@UseGuards(JwtAuthGuard)
-	async getWallets(@Request() req): Promise<Wallet[]> {
-		return this.walletService.getWallets(req.user.userId)
+	async getWallets(@Request() req) {
+		const userId = req.user.userId
+		const graph = await this.walletService.getExpenseGraphData(userId)
+		const wallets = await this.walletService.getWallets(userId)
+		return { graph, wallets }
 	}
 
 	@Patch('wallet/:id')
 	@UseGuards(JwtAuthGuard)
 	async editWallet(
-		@Param('id', ParseIntPipe) walletId: number,
+		@Param('id', WalletValidationPipe) wallet: Wallet,
 		@Body() { name }: EditWalletDto,
 		@Request() req
 	): Promise<Wallet[]> {
-		const isOwnWallet = await this.walletService.checkWalletOwnership(req.user.userId, walletId)
+		const isOwnWallet = await this.walletService.checkWalletOwnership(req.user.userId, wallet.id)
 		if (!isOwnWallet) throw new ForbiddenException()
-		await this.walletService.editWallet(walletId, name)
+		await this.walletService.editWallet(wallet.id, name)
 		return this.walletService.getWallets(req.user.userId)
 	}
 
 	@Delete('wallet/:id')
 	@UseGuards(JwtAuthGuard)
-	async deleteWallet(@Param('id', ParseIntPipe) walletId: number, @Request() req): Promise<Wallet[]> {
-		const isOwnWallet = await this.walletService.checkWalletOwnership(req.user.userId, walletId)
+	async deleteWallet(@Param('id', WalletValidationPipe) wallet: Wallet, @Request() req): Promise<Wallet[]> {
+		const isOwnWallet = await this.walletService.checkWalletOwnership(req.user.userId, wallet.id)
 		if (!isOwnWallet) throw new ForbiddenException()
-		await this.walletService.deleteWallet(walletId)
+		await this.walletService.deleteWallet(wallet.id)
 		return this.walletService.getWallets(req.user.userId)
 	}
 }

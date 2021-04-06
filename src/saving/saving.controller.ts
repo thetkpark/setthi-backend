@@ -17,6 +17,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { CreateSavingDto } from './dto/create-saving.dto'
 import { EditSavingDto } from './dto/edit-saving.dto'
 import { SavingService } from './saving.service'
+import { SavingValidationPipe } from './saving-validation.pipe'
 
 @Controller('api')
 export class SavingController {
@@ -45,24 +46,24 @@ export class SavingController {
 	@Patch('saving/:id')
 	@UseGuards(JwtAuthGuard)
 	async editSaving(
-		@Param('id', ParseIntPipe) savingId: number,
+		@Param('id', SavingValidationPipe) saving: Saving,
 		@Body() { title, target_amount }: EditSavingDto,
 		@Request() req
 	): Promise<Saving[]> {
 		const userId = req.user.userId
-		const isOwnSaving = await this.savingService.checkSavingOwnership(userId, savingId)
+		const isOwnSaving = await this.savingService.checkSavingOwnership(userId, saving.id)
 		if (!isOwnSaving) throw new ForbiddenException()
-		await this.savingService.editSaving(savingId, title, target_amount)
+		await this.savingService.editSaving(saving.id, title, target_amount)
 		return this.savingService.getSavings(userId)
 	}
 
 	@Delete('saving/:id')
 	@UseGuards(JwtAuthGuard)
-	async deleteSaving(@Param('id', ParseIntPipe) savingId: number, @Request() req): Promise<Saving[]> {
+	async deleteSaving(@Param('id', SavingValidationPipe) saving: Saving, @Request() req): Promise<Saving[]> {
 		const userId = req.user.userId
-		const isOwnSaving = await this.savingService.checkSavingOwnership(userId, savingId)
+		const isOwnSaving = await this.savingService.checkSavingOwnership(userId, saving.id)
 		if (!isOwnSaving) throw new ForbiddenException()
-		await this.savingService.deleteSaving(savingId)
+		await this.savingService.deleteSaving(saving.id)
 		return this.savingService.getSavings(userId)
 	}
 }
