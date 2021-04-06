@@ -31,6 +31,7 @@ model Wallet {
   updatedAt   DateTime      @updatedAt
   owner       User          @relation(fields: [owner_id], references: [id])
   owner_id    Int
+  is_deleted  Boolean       @default(false)
   Transaction Transaction[]
 }
 
