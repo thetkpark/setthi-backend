@@ -7,13 +7,13 @@ import {
 	ForbiddenException,
 	Get,
 	Param,
-	ParseIntPipe,
 	Patch,
 	Post,
 	Request,
 	UseGuards,
 } from '@nestjs/common'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
+import { CategoryValidationPipe } from './category-validation.pipe'
 import { CategoryService } from './category.service'
 import { CategoryDto } from './dto/category.dto'
 import { EditCategoryDto } from './dto/edit-category.dto'
@@ -42,24 +42,24 @@ export class CategoryController {
 	@Patch('category/:id')
 	@UseGuards(JwtAuthGuard)
 	async editCategory(
-		@Param('id', ParseIntPipe) categoryId: number,
+		@Param('id', CategoryValidationPipe) category: Category,
 		@Body() { name, color }: EditCategoryDto,
 		@Request() req
 	): Promise<Category[]> {
 		const userId = req.user.userId
-		const isOwnCategory = await this.categoryService.checkCategoryOwnership(userId, categoryId)
+		const isOwnCategory = await this.categoryService.checkCategoryOwnership(userId, category.id)
 		if (!isOwnCategory) throw new ForbiddenException()
-		await this.categoryService.editCategory(categoryId, name, color)
+		await this.categoryService.editCategory(category.id, name, color)
 		return this.categoryService.getCategories(userId)
 	}
 
 	@Delete('category/:id')
 	@UseGuards(JwtAuthGuard)
-	async deleteCategory(@Param('id', ParseIntPipe) categoryId: number, @Request() req): Promise<Category[]> {
+	async deleteCategory(@Param('id', CategoryValidationPipe) category: Category, @Request() req): Promise<Category[]> {
 		const userId = req.user.userId
-		const isOwnCategory = await this.categoryService.checkCategoryOwnership(userId, categoryId)
+		const isOwnCategory = await this.categoryService.checkCategoryOwnership(userId, category.id)
 		if (!isOwnCategory) throw new ForbiddenException()
-		await this.categoryService.deleteCategory(categoryId)
+		await this.categoryService.deleteCategory(category.id)
 		return this.categoryService.getCategories(userId)
 	}
 }
