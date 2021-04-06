@@ -23,11 +23,10 @@ export class CategoryService {
 		})
 	}
 
-	async editCategory(categoryId: number, name: string, type: CategoryType, color: string): Promise<Category> {
+	async editCategory(categoryId: number, name: string, color: string): Promise<Category> {
 		return this.prisma.category.update({
 			data: {
 				name,
-				type,
 				color,
 			},
 			where: {
