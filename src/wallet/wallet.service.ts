@@ -19,7 +19,7 @@ export class WalletService {
 	async getWallets(ownerId: number): Promise<Wallet[]> {
 		return this.prisma.wallet.findMany({
 			where: {
-				owner_id: ownerId,
+				AND: [{ owner_id: ownerId }, { is_deleted: false }],
 			},
 			orderBy: {
 				createdAt: 'asc',
@@ -30,7 +30,7 @@ export class WalletService {
 	async checkWalletOwnership(ownerId: number, walletId: number): Promise<boolean> {
 		const wallet = await this.prisma.wallet.findFirst({
 			where: {
-				AND: [{ owner_id: ownerId }, { id: walletId }],
+				AND: [{ owner_id: ownerId }, { id: walletId }, { is_deleted: false }],
 			},
 		})
 		return wallet ? true : false
@@ -72,9 +72,12 @@ export class WalletService {
 	}
 
 	async deleteWallet(walletId: number): Promise<Wallet> {
-		return this.prisma.wallet.delete({
+		return this.prisma.wallet.update({
 			where: {
 				id: walletId,
+			},
+			data: {
+				is_deleted: true,
 			},
 		})
 	}
@@ -82,7 +85,7 @@ export class WalletService {
 	async countWallets(ownerId: number): Promise<number> {
 		const count = await this.prisma.wallet.count({
 			where: {
-				owner_id: ownerId,
+				AND: [{ owner_id: ownerId }, { is_deleted: false }],
 			},
 		})
 		return count
@@ -91,7 +94,7 @@ export class WalletService {
 	async getWallet(walletId: number): Promise<Wallet> {
 		return this.prisma.wallet.findFirst({
 			where: {
-				id: walletId,
+				AND: [{ id: walletId }, { is_deleted: false }],
 			},
 		})
 	}
@@ -102,7 +105,7 @@ export class WalletService {
 				amount: true,
 			},
 			where: {
-				owner_id: ownerId,
+				AND: [{ owner_id: ownerId }, { is_deleted: false }],
 			},
 		})
 		return balance.sum.amount.toNumber()
