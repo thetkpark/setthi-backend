@@ -59,4 +59,12 @@ export class LabelService {
 			},
 		})
 	}
+
+	async getLabel(labelId: number): Promise<Label> {
+		return this.prisma.label.findFirst({
+			where: {
+				id: labelId,
+			},
+		})
+	}
 }

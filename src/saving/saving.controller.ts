@@ -7,6 +7,7 @@ import {
 	ForbiddenException,
 	Get,
 	Param,
+	ParseIntPipe,
 	Patch,
 	Post,
 	Request,
@@ -44,12 +45,11 @@ export class SavingController {
 	@Patch('saving/:id')
 	@UseGuards(JwtAuthGuard)
 	async editSaving(
-		@Param() params,
+		@Param('id', ParseIntPipe) savingId: number,
 		@Body() { title, target_amount }: EditSavingDto,
 		@Request() req
 	): Promise<Saving[]> {
 		const userId = req.user.userId
-		const savingId = parseInt(params.id)
 		const isOwnSaving = await this.savingService.checkSavingOwnership(userId, savingId)
 		if (!isOwnSaving) throw new ForbiddenException()
 		await this.savingService.editSaving(savingId, title, target_amount)
@@ -58,9 +58,8 @@ export class SavingController {
 
 	@Delete('saving/:id')
 	@UseGuards(JwtAuthGuard)
-	async deleteSaving(@Param() params, @Request() req): Promise<Saving[]> {
+	async deleteSaving(@Param('id', ParseIntPipe) savingId: number, @Request() req): Promise<Saving[]> {
 		const userId = req.user.userId
-		const savingId = parseInt(params.id)
 		const isOwnSaving = await this.savingService.checkSavingOwnership(userId, savingId)
 		if (!isOwnSaving) throw new ForbiddenException()
 		await this.savingService.deleteSaving(savingId)

@@ -7,6 +7,7 @@ import {
 	ForbiddenException,
 	Get,
 	Param,
+	ParseIntPipe,
 	Patch,
 	Post,
 	Request,
@@ -40,9 +41,12 @@ export class CategoryController {
 
 	@Patch('category/:id')
 	@UseGuards(JwtAuthGuard)
-	async editCategory(@Param() params, @Body() { name, color }: EditCategoryDto, @Request() req): Promise<Category[]> {
+	async editCategory(
+		@Param('id', ParseIntPipe) categoryId: number,
+		@Body() { name, color }: EditCategoryDto,
+		@Request() req
+	): Promise<Category[]> {
 		const userId = req.user.userId
-		const categoryId = parseInt(params.id)
 		const isOwnCategory = await this.categoryService.checkCategoryOwnership(userId, categoryId)
 		if (!isOwnCategory) throw new ForbiddenException()
 		await this.categoryService.editCategory(categoryId, name, color)
@@ -51,9 +55,8 @@ export class CategoryController {
 
 	@Delete('category/:id')
 	@UseGuards(JwtAuthGuard)
-	async deleteCategory(@Param() params, @Request() req): Promise<Category[]> {
+	async deleteCategory(@Param('id', ParseIntPipe) categoryId: number, @Request() req): Promise<Category[]> {
 		const userId = req.user.userId
-		const categoryId = parseInt(params.id)
 		const isOwnCategory = await this.categoryService.checkCategoryOwnership(userId, categoryId)
 		if (!isOwnCategory) throw new ForbiddenException()
 		await this.categoryService.deleteCategory(categoryId)

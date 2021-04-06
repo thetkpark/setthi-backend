@@ -19,8 +19,6 @@ export const getMailTemplate = (token: string) => {
         width: 100%;
         height: 100vh;
         display: flex;
-        flex-direction: column;
-        align-items: center;
         background-color: #FFF9EE;
       }
       .box{
@@ -28,8 +26,6 @@ export const getMailTemplate = (token: string) => {
         height: fit-content;
         padding: 30px;
         display: flex;
-        flex-direction: column;
-        align-items: center;
         margin-top: 30px;
       }
       .mt-10{
@@ -38,9 +34,9 @@ export const getMailTemplate = (token: string) => {
     </style>
   </head>
   <body>
-    <div class="wrapper">
-      <div class="box">
-        <img src="https://i.ibb.co/dfhgmk2/Banker-Monochromatic-2.png" alt="setthi-logo" border="0" style="height: 160px">
+    <div class="wrapper" style="justify-content:center;">
+      <div class="box" style="align-items: center;flex-flow:column;width:80%">
+        <img src="https://i.ibb.co/dfhgmk2/Banker-Monochromatic-2.png" alt="setthi-logo" border="0" style="width: 50%">
         <h1 class="mt-10">Setthi reset password</h1>
         <h4 class="mt-10">This is your recovery key</h4>
         <h1 style="letter-spacing: 5px; font-size: 4rem;" class="mt-10">${token}</h1>
