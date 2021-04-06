@@ -1,5 +1,5 @@
 import { Category } from '.prisma/client'
-import { Injectable, PipeTransform, ArgumentMetadata, NotFoundException } from '@nestjs/common'
+import { Injectable, PipeTransform, NotFoundException } from '@nestjs/common'
 import { CategoryService } from './category.service'
 
 @Injectable()
