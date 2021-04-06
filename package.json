@@ -32,6 +32,7 @@
     "bcrypt": "^5.0.1",
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
+    "dayjs": "^1.10.4",
     "mysql2": "^2.2.5",
     "nanoid": "^3.1.22",
     "node-cache": "^5.1.2",

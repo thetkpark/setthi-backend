@@ -47,8 +47,3 @@ export class TransactionService {
 		})
 	}
 }
-
-// export interface CreateTransactionData {
-// 	title: string
-
-// }

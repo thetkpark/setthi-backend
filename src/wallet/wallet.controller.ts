@@ -34,8 +34,11 @@ export class WalletController {
 
 	@Get('wallets')
 	@UseGuards(JwtAuthGuard)
-	async getWallets(@Request() req): Promise<Wallet[]> {
-		return this.walletService.getWallets(req.user.userId)
+	async getWallets(@Request() req) {
+		const userId = req.user.userId
+		const graph = await this.walletService.getExpenseGraphData(userId)
+		const wallets = await this.walletService.getWallets(userId)
+		return { graph, wallets }
 	}
 
 	@Patch('wallet/:id')
