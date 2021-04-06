@@ -156,7 +156,6 @@ export class TransactionController {
 			this.savingService.checkSavingOwnershipAndFinish(userId, saving_id),
 		]
 		const ownershipCheck = await Promise.all(ownershipOps)
-		console.log(ownershipCheck)
 		if (ownershipCheck.some(ele => ele === false)) throw new ForbiddenException()
 
 		const saving = await this.savingService.getSaving(saving_id)
