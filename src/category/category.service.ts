@@ -56,6 +56,15 @@ export class CategoryService {
 		return category ? true : false
 	}
 
+	async checkCategoryOwnershipAndType(ownerId: number, categoryId: number, type: CategoryType): Promise<boolean> {
+		const category = await this.prisma.category.findFirst({
+			where: {
+				AND: [{ owner_id: ownerId }, { id: categoryId }, { type }],
+			},
+		})
+		return category ? true : false
+	}
+
 	async countCategories(ownerId: number): Promise<number> {
 		return this.prisma.category.count({
 			where: {
