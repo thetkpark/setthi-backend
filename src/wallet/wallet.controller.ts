@@ -7,7 +7,6 @@ import {
 	ForbiddenException,
 	Get,
 	Param,
-	ParseIntPipe,
 	Patch,
 	Post,
 	Request,
