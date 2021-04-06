@@ -38,16 +38,20 @@ export class TransactionController {
 		const ownershipCheck = await Promise.all(ownershipOps)
 		if (ownershipCheck.some(ele => ele === false)) throw new ForbiddenException()
 
-		await this.transactionService.createTransaction(
-			title,
-			amount,
-			category_id,
-			new Date(date),
-			null,
-			TransactionType.INCOME,
-			wallet_id,
-			userId
-		)
+		const transactionOps: Promise<any>[] = [
+			this.transactionService.createTransaction(
+				title,
+				amount,
+				category_id,
+				new Date(date),
+				null,
+				TransactionType.INCOME,
+				wallet_id,
+				userId
+			),
+			this.walletService.updateWalletAmount(wallet_id, TransactionType.INCOME, amount),
+		]
+		await Promise.all(transactionOps)
 
 		return this.transactionService.getTimelineTransactions(userId)
 	}
