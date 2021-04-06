@@ -1,6 +1,6 @@
 import { IsDateString, IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator'
 
-export class CreateIncomeExpenseTransactionDto {
+export class CreateSavingTransactionDto {
 	@IsNotEmpty()
 	@IsString()
 	title: string
@@ -23,4 +23,9 @@ export class CreateIncomeExpenseTransactionDto {
 	@IsNumber()
 	@IsPositive()
 	wallet_id: number
+
+	@IsNotEmpty()
+	@IsNumber()
+	@IsPositive()
+	saving_id: number
 }

@@ -49,7 +49,6 @@ export class SavingService {
 	}
 
 	async addCurrentAmount(savingId: number, amount: number): Promise<Saving> {
-		// TODO: Handle case when transaction to the finished saving
 		const saving = await this.prisma.saving.findFirst({ where: { id: savingId } })
 		const savingAmount = saving.current_amount.toNumber() + amount
 		const targetAmount = saving.target_amount.toNumber()
@@ -109,5 +108,14 @@ export class SavingService {
 				id: savingId,
 			},
 		})
+	}
+
+	async checkSavingOwnershipAndNotFinish(ownerId: number, savingId: number): Promise<boolean> {
+		const saving = await this.prisma.saving.findFirst({
+			where: {
+				AND: [{ owner_id: ownerId }, { id: savingId }, { is_finish: false }],
+			},
+		})
+		return saving ? true : false
 	}
 }
