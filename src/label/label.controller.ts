@@ -15,6 +15,7 @@ import {
 } from '@nestjs/common'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { LabelDto } from './dto/label.dto'
+import { LabelValidationPipe } from './label-validation.pipe'
 import { LabelService } from './label.service'
 
 @Controller('api')
@@ -41,14 +42,14 @@ export class LabelController {
 	@Patch('label/:id')
 	@UseGuards(JwtAuthGuard)
 	async editLabel(
-		@Param('id', ParseIntPipe) labelId: number,
+		@Param('id', LabelValidationPipe) label: Label,
 		@Body() { name, type }: LabelDto,
 		@Request() req
 	): Promise<Label[]> {
-		const userId = req.user.userId
-		const isOwnLabel = await this.labelService.checkLabelOwnership(userId, labelId)
+		const userId: number = req.user.userId
+		const isOwnLabel = userId === label.owner_id
 		if (!isOwnLabel) throw new ForbiddenException()
-		await this.labelService.editLabel(labelId, name, type)
+		await this.labelService.editLabel(label.id, name, type)
 		return this.labelService.getLabels(userId)
 	}
 
