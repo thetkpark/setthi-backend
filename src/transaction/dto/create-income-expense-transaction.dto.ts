@@ -1,6 +1,6 @@
 import { IsDateString, IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator'
 
-export class CreateIncomeTransactionDto {
+export class CreateIncomeExpenseTransactionDto {
 	@IsNotEmpty()
 	@IsString()
 	title: string
