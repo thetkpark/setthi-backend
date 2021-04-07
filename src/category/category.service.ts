@@ -15,10 +15,10 @@ export class CategoryService {
 		})
 	}
 
-	async getCategories(ownerId: number): Promise<Category[]> {
+	async getCategories(ownerId: number, type?: CategoryType): Promise<Category[]> {
 		return this.prisma.category.findMany({
 			where: {
-				AND: [{ owner_id: ownerId }, { is_deleted: false }],
+				AND: [{ owner_id: ownerId }, { is_deleted: false }, { type }],
 			},
 		})
 	}

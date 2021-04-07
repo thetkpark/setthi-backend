@@ -9,6 +9,7 @@ import {
 	Param,
 	Patch,
 	Post,
+	Query,
 	UseGuards,
 } from '@nestjs/common'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
@@ -17,6 +18,7 @@ import { CategoryValidationPipe } from './category-validation.pipe'
 import { CategoryService } from './category.service'
 import { CategoryDto } from './dto/category.dto'
 import { EditCategoryDto } from './dto/edit-category.dto'
+import { QueryCategoryDto } from './dto/query-category.dto'
 
 @Controller('api')
 export class CategoryController {
@@ -33,8 +35,8 @@ export class CategoryController {
 
 	@Get('categories')
 	@UseGuards(JwtAuthGuard)
-	async getCategories(@User() userId: number): Promise<Category[]> {
-		return this.categoryService.getCategories(userId)
+	async getCategories(@Query() query: QueryCategoryDto, @User() userId: number): Promise<Category[]> {
+		return this.categoryService.getCategories(userId, query.type)
 	}
 
 	@Patch('category/:id')
