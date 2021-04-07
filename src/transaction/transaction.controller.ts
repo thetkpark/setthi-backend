@@ -21,9 +21,7 @@ export class TransactionController {
 	) {}
 
 	async getTimelineScreenData(userId: number) {
-		const transactions = await this.transactionService.getTimelineTransactions(userId)
-		const balance = await this.walletService.getTotalBalance(userId)
-		return { balance, transactions }
+		return this.transactionService.getTimelineTransactions(userId)
 	}
 
 	@Get('timeline')
