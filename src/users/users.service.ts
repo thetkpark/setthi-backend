@@ -7,8 +7,14 @@ import * as bcrypt from 'bcrypt'
 export class UsersService {
 	constructor(private prisma: PrismaService) {}
 
-	async findById(userId: number): Promise<User> {
-		return this.prisma.user.findFirst({ where: { id: userId } })
+	async findById(userId: number) {
+		return this.prisma.user.findFirst({
+			where: { id: userId },
+			select: {
+				id: true,
+				email: true,
+			},
+		})
 	}
 
 	async findByEmail(email: string): Promise<User> {

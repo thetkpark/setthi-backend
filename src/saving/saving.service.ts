@@ -42,8 +42,8 @@ export class SavingService {
 			const result = await Promise.all(ops)
 			return {
 				un_finished: result[0],
-				fisnihed_unused: result[1],
-				fisnihed_used: result[2],
+				finished_unused: result[1],
+				finished_used: result[2],
 			}
 		}
 		return this.prisma.saving.findMany({

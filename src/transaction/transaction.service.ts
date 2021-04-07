@@ -30,7 +30,7 @@ export class TransactionService {
 		})
 	}
 
-	async getTimelineTransactions(owner_id: number): Promise<Transaction[]> {
+	async getTimelineTransactions(owner_id: number) {
 		return this.prisma.transaction.findMany({
 			where: {
 				owner_id,
@@ -39,15 +39,48 @@ export class TransactionService {
 				date: 'desc',
 			},
 			take: 10,
-			include: {
-				category: true,
-				saving: true,
-				wallet: true,
+			select: {
+				id: true,
+				title: true,
+				amount: true,
+				date: true,
+				transaction_type: true,
+				category: {
+					select: {
+						id: true,
+						name: true,
+						color: true,
+						is_deleted: true,
+						type: true,
+						owner_id: true,
+					},
+				},
+				saving: {
+					select: {
+						id: true,
+						title: true,
+						is_finish: true,
+						current_amount: true,
+						target_amount: true,
+						start_date: true,
+						end_date: true,
+						owner_id: true,
+					},
+				},
+				wallet: {
+					select: {
+						id: true,
+						name: true,
+						amount: true,
+						is_deleted: true,
+						owner_id: true,
+					},
+				},
 			},
 		})
 	}
 
-	async getMontlyTransaction(owner_id: number, startDate: Date, endDate: Date): Promise<Transaction[]> {
+	async getMontlyTransaction(owner_id: number, startDate: Date, endDate: Date) {
 		return this.prisma.transaction.findMany({
 			where: {
 				AND: [
@@ -60,13 +93,46 @@ export class TransactionService {
 					},
 				],
 			},
-			include: {
-				category: true,
-				saving: true,
-				wallet: true,
-			},
 			orderBy: {
 				date: 'desc',
+			},
+			select: {
+				id: true,
+				title: true,
+				amount: true,
+				date: true,
+				transaction_type: true,
+				category: {
+					select: {
+						id: true,
+						name: true,
+						color: true,
+						is_deleted: true,
+						type: true,
+						owner_id: true,
+					},
+				},
+				saving: {
+					select: {
+						id: true,
+						title: true,
+						is_finish: true,
+						current_amount: true,
+						target_amount: true,
+						start_date: true,
+						end_date: true,
+						owner_id: true,
+					},
+				},
+				wallet: {
+					select: {
+						id: true,
+						name: true,
+						amount: true,
+						is_deleted: true,
+						owner_id: true,
+					},
+				},
 			},
 		})
 	}
