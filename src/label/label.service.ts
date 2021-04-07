@@ -15,10 +15,10 @@ export class LabelService {
 		})
 	}
 
-	async getLabels(ownerId: number): Promise<Label[]> {
+	async getLabels(ownerId: number, type?: LabelType): Promise<Label[]> {
 		return this.prisma.label.findMany({
 			where: {
-				owner_id: ownerId,
+				AND: [{ owner_id: ownerId }, { type }],
 			},
 		})
 	}
@@ -52,10 +52,10 @@ export class LabelService {
 		return label ? true : false
 	}
 
-	async countLabel(ownerId: number): Promise<number> {
+	async countLabel(ownerId: number, type?: LabelType): Promise<number> {
 		return this.prisma.label.count({
 			where: {
-				owner_id: ownerId,
+				AND: [{ owner_id: ownerId }, { type }],
 			},
 		})
 	}
