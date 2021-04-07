@@ -9,6 +9,7 @@ import {
 	Param,
 	Patch,
 	Post,
+	Query,
 	UseGuards,
 } from '@nestjs/common'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
@@ -17,6 +18,7 @@ import { CategoryValidationPipe } from './category-validation.pipe'
 import { CategoryService } from './category.service'
 import { CategoryDto } from './dto/category.dto'
 import { EditCategoryDto } from './dto/edit-category.dto'
+import { QueryCategoryDto } from './dto/query-category.dto'
 
 @Controller('api')
 export class CategoryController {
@@ -25,16 +27,16 @@ export class CategoryController {
 	@Post('category')
 	@UseGuards(JwtAuthGuard)
 	async createCategory(@Body() { name, type, color }: CategoryDto, @User() userId: number): Promise<Category[]> {
-		const categoriesCount = await this.categoryService.countCategories(userId)
-		if (categoriesCount === 10) throw new BadRequestException('Limit number of categories exceeded')
+		const categoriesCount = await this.categoryService.countCategories(userId, type)
+		if (categoriesCount === 10) throw new BadRequestException(`Limit number of ${type} categories exceeded`)
 		await this.categoryService.createCategory(name, type, color, userId)
 		return this.categoryService.getCategories(userId)
 	}
 
 	@Get('categories')
 	@UseGuards(JwtAuthGuard)
-	async getCategories(@User() userId: number): Promise<Category[]> {
-		return this.categoryService.getCategories(userId)
+	async getCategories(@Query() query: QueryCategoryDto, @User() userId: number): Promise<Category[]> {
+		return this.categoryService.getCategories(userId, query.type)
 	}
 
 	@Patch('category/:id')

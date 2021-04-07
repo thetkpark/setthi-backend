@@ -9,6 +9,7 @@ import {
 	Param,
 	Patch,
 	Post,
+	Query,
 	UseGuards,
 } from '@nestjs/common'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
@@ -16,6 +17,7 @@ import { LabelDto } from './dto/label.dto'
 import { LabelValidationPipe } from './label-validation.pipe'
 import { LabelService } from './label.service'
 import { User } from 'src/decorators/user.decorator'
+import { QueryLabelDto } from './dto/query-label.dto'
 
 @Controller('api')
 export class LabelController {
@@ -24,16 +26,16 @@ export class LabelController {
 	@Post('label')
 	@UseGuards(JwtAuthGuard)
 	async createLabel(@Body() { name, type }: LabelDto, @User() userId: number): Promise<Label[]> {
-		const labelCount = await this.labelService.countLabel(userId)
-		if (labelCount === 10) throw new BadRequestException('Limit number of label exceeded')
+		const labelCount = await this.labelService.countLabel(userId, type)
+		if (labelCount === 10) throw new BadRequestException(`Limit number of ${type} label exceeded`)
 		await this.labelService.createLabel(name, type, userId)
 		return this.labelService.getLabels(userId)
 	}
 
 	@Get('labels')
 	@UseGuards(JwtAuthGuard)
-	async getLabels(@User() userId: number): Promise<Label[]> {
-		return this.labelService.getLabels(userId)
+	async getLabels(@Query() labelQuery: QueryLabelDto, @User() userId: number): Promise<Label[]> {
+		return this.labelService.getLabels(userId, labelQuery.type)
 	}
 
 	@Patch('label/:id')

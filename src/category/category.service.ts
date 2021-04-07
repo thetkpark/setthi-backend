@@ -15,10 +15,10 @@ export class CategoryService {
 		})
 	}
 
-	async getCategories(ownerId: number): Promise<Category[]> {
+	async getCategories(ownerId: number, type?: CategoryType): Promise<Category[]> {
 		return this.prisma.category.findMany({
 			where: {
-				AND: [{ owner_id: ownerId }, { is_deleted: false }],
+				AND: [{ owner_id: ownerId }, { is_deleted: false }, { type }],
 			},
 		})
 	}
@@ -64,10 +64,10 @@ export class CategoryService {
 		return category ? true : false
 	}
 
-	async countCategories(ownerId: number): Promise<number> {
+	async countCategories(ownerId: number, type: CategoryType): Promise<number> {
 		return this.prisma.category.count({
 			where: {
-				AND: [{ owner_id: ownerId }, { is_deleted: false }],
+				AND: [{ owner_id: ownerId }, { is_deleted: false }, { type }],
 			},
 		})
 	}
