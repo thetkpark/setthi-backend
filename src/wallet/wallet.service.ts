@@ -168,4 +168,14 @@ export class WalletService {
 			data,
 		}
 	}
+
+	async initWallet(owner_id: number) {
+		return this.prisma.wallet.create({
+			data: {
+				name: 'Wallet 1',
+				amount: 0,
+				owner_id,
+			},
+		})
+	}
 }

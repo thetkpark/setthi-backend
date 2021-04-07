@@ -67,4 +67,17 @@ export class LabelService {
 			},
 		})
 	}
+
+	async initLabels(owner_id: number) {
+		return this.prisma.label.createMany({
+			data: [
+				{ label: 'Salary', type: LabelType.INCOME, owner_id },
+				{ label: 'Bonus', type: LabelType.INCOME, owner_id },
+				{ label: 'Gift', type: LabelType.INCOME, owner_id },
+				{ label: 'Taxi', type: LabelType.EXPENSE, owner_id },
+				{ label: 'Lunch', type: LabelType.EXPENSE, owner_id },
+				{ label: 'Hangout', type: LabelType.EXPENSE, owner_id },
+			],
+		})
+	}
 }
