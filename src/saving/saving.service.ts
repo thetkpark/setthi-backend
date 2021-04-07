@@ -6,13 +6,55 @@ import { PrismaService } from 'src/prisma.service'
 export class SavingService {
 	constructor(private prisma: PrismaService) {}
 
-	async getSavings(userId: number): Promise<Saving[]> {
+	async getSavings(userId: number, is_finish?: boolean, is_used?: boolean) {
+		if (is_finish === undefined && is_used === undefined) {
+			const ops: Promise<Saving[]>[] = [
+				this.prisma.saving.findMany({
+					where: {
+						AND: [{ owner_id: userId }, { is_finish: false }],
+					},
+				}),
+				this.prisma.saving.findMany({
+					where: {
+						AND: [
+							{ owner_id: userId },
+							{ is_finish: true },
+							{
+								current_amount: {
+									not: 0,
+								},
+							},
+						],
+					},
+				}),
+				this.prisma.saving.findMany({
+					where: {
+						AND: [
+							{ owner_id: userId },
+							{ is_finish: true },
+							{
+								current_amount: 0,
+							},
+						],
+					},
+				}),
+			]
+			const result = await Promise.all(ops)
+			return {
+				un_finished: result[0],
+				fisnihed_unused: result[1],
+				fisnihed_used: result[2],
+			}
+		}
 		return this.prisma.saving.findMany({
 			where: {
-				AND: [{ owner_id: userId }, { is_finish: false }],
-			},
-			orderBy: {
-				end_date: 'asc',
+				AND: [
+					{ owner_id: userId },
+					{ is_finish },
+					{
+						current_amount: is_used ? 0 : { not: 0 },
+					},
+				],
 			},
 		})
 	}
