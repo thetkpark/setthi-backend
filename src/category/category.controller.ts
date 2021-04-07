@@ -27,8 +27,8 @@ export class CategoryController {
 	@Post('category')
 	@UseGuards(JwtAuthGuard)
 	async createCategory(@Body() { name, type, color }: CategoryDto, @User() userId: number): Promise<Category[]> {
-		const categoriesCount = await this.categoryService.countCategories(userId)
-		if (categoriesCount === 10) throw new BadRequestException('Limit number of categories exceeded')
+		const categoriesCount = await this.categoryService.countCategories(userId, type)
+		if (categoriesCount === 10) throw new BadRequestException(`Limit number of ${type} categories exceeded`)
 		await this.categoryService.createCategory(name, type, color, userId)
 		return this.categoryService.getCategories(userId)
 	}
