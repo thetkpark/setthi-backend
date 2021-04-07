@@ -34,9 +34,13 @@ export class WalletController {
 	@Get('wallets')
 	@UseGuards(JwtAuthGuard)
 	async getWallets(@User() userId: number) {
-		const graph = await this.walletService.getExpenseGraphData(userId)
-		const wallets = await this.walletService.getWallets(userId)
-		return { graph, wallets }
+		return this.walletService.getWallets(userId)
+	}
+
+	@Get('expense-graph')
+	@UseGuards(JwtAuthGuard)
+	async getExpenseGraphOnWalletsScreen(@User() userId: number) {
+		return this.walletService.getExpenseGraphData(userId)
 	}
 
 	@Patch('wallet/:id')
