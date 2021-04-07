@@ -9,10 +9,10 @@ import {
 	Param,
 	Patch,
 	Post,
-	Request,
 	UseGuards,
 } from '@nestjs/common'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
+import { User } from 'src/decorators/user.decorator'
 import { CategoryValidationPipe } from './category-validation.pipe'
 import { CategoryService } from './category.service'
 import { CategoryDto } from './dto/category.dto'
@@ -24,8 +24,7 @@ export class CategoryController {
 
 	@Post('category')
 	@UseGuards(JwtAuthGuard)
-	async createCategory(@Body() { name, type, color }: CategoryDto, @Request() req): Promise<Category[]> {
-		const userId = req.user.userId
+	async createCategory(@Body() { name, type, color }: CategoryDto, @User() userId: number): Promise<Category[]> {
 		const categoriesCount = await this.categoryService.countCategories(userId)
 		if (categoriesCount === 10) throw new BadRequestException('Limit number of categories exceeded')
 		await this.categoryService.createCategory(name, type, color, userId)
@@ -34,8 +33,7 @@ export class CategoryController {
 
 	@Get('categories')
 	@UseGuards(JwtAuthGuard)
-	async getCategories(@Request() req): Promise<Category[]> {
-		const userId = req.user.userId
+	async getCategories(@User() userId: number): Promise<Category[]> {
 		return this.categoryService.getCategories(userId)
 	}
 
@@ -44,9 +42,8 @@ export class CategoryController {
 	async editCategory(
 		@Param('id', CategoryValidationPipe) category: Category,
 		@Body() { name, color }: EditCategoryDto,
-		@Request() req
+		@User() userId: number
 	): Promise<Category[]> {
-		const userId = req.user.userId
 		const isOwnCategory = await this.categoryService.checkCategoryOwnership(userId, category.id)
 		if (!isOwnCategory) throw new ForbiddenException()
 		await this.categoryService.editCategory(category.id, name, color)
@@ -55,8 +52,10 @@ export class CategoryController {
 
 	@Delete('category/:id')
 	@UseGuards(JwtAuthGuard)
-	async deleteCategory(@Param('id', CategoryValidationPipe) category: Category, @Request() req): Promise<Category[]> {
-		const userId = req.user.userId
+	async deleteCategory(
+		@Param('id', CategoryValidationPipe) category: Category,
+		@User() userId: number
+	): Promise<Category[]> {
 		const isOwnCategory = await this.categoryService.checkCategoryOwnership(userId, category.id)
 		if (!isOwnCategory) throw new ForbiddenException()
 		await this.categoryService.deleteCategory(category.id)

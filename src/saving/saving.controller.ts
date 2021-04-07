@@ -7,10 +7,8 @@ import {
 	ForbiddenException,
 	Get,
 	Param,
-	ParseIntPipe,
 	Patch,
 	Post,
-	Request,
 	UseGuards,
 } from '@nestjs/common'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
@@ -18,6 +16,7 @@ import { CreateSavingDto } from './dto/create-saving.dto'
 import { EditSavingDto } from './dto/edit-saving.dto'
 import { SavingService } from './saving.service'
 import { SavingValidationPipe } from './saving-validation.pipe'
+import { User } from 'src/decorators/user.decorator'
 
 @Controller('api')
 export class SavingController {
@@ -25,8 +24,7 @@ export class SavingController {
 
 	@Get('savings')
 	@UseGuards(JwtAuthGuard)
-	async getSavings(@Request() req): Promise<Saving[]> {
-		const userId = req.user.userId
+	async getSavings(@User() userId: number): Promise<Saving[]> {
 		return this.savingService.getSavings(userId)
 	}
 
@@ -34,9 +32,8 @@ export class SavingController {
 	@UseGuards(JwtAuthGuard)
 	async createSaving(
 		@Body() { title, target_amount, start_date, end_date }: CreateSavingDto,
-		@Request() req
+		@User() userId: number
 	): Promise<Saving[]> {
-		const userId = req.user.userId
 		const savingCount = await this.savingService.countSaving(userId)
 		if (savingCount === 5) throw new BadRequestException('Limit number of saving exceeded')
 		await this.savingService.createSaving(title, target_amount, new Date(start_date), new Date(end_date), userId)
@@ -48,9 +45,8 @@ export class SavingController {
 	async editSaving(
 		@Param('id', SavingValidationPipe) saving: Saving,
 		@Body() { title, target_amount }: EditSavingDto,
-		@Request() req
+		@User() userId: number
 	): Promise<Saving[]> {
-		const userId = req.user.userId
 		const isOwnSaving = await this.savingService.checkSavingOwnership(userId, saving.id)
 		if (!isOwnSaving) throw new ForbiddenException()
 		await this.savingService.editSaving(saving.id, title, target_amount)
@@ -59,8 +55,7 @@ export class SavingController {
 
 	@Delete('saving/:id')
 	@UseGuards(JwtAuthGuard)
-	async deleteSaving(@Param('id', SavingValidationPipe) saving: Saving, @Request() req): Promise<Saving[]> {
-		const userId = req.user.userId
+	async deleteSaving(@Param('id', SavingValidationPipe) saving: Saving, @User() userId: number): Promise<Saving[]> {
 		const isOwnSaving = await this.savingService.checkSavingOwnership(userId, saving.id)
 		if (!isOwnSaving) throw new ForbiddenException()
 		await this.savingService.deleteSaving(saving.id)

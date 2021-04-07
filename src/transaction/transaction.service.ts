@@ -36,13 +36,37 @@ export class TransactionService {
 				owner_id,
 			},
 			orderBy: {
-				createdAt: 'desc',
+				date: 'desc',
 			},
 			take: 10,
 			include: {
 				category: true,
 				saving: true,
 				wallet: true,
+			},
+		})
+	}
+
+	async getMontlyTransaction(owner_id: number, startDate: Date, endDate: Date): Promise<Transaction[]> {
+		return this.prisma.transaction.findMany({
+			where: {
+				AND: [
+					{ owner_id },
+					{
+						date: {
+							gte: startDate,
+							lte: endDate,
+						},
+					},
+				],
+			},
+			include: {
+				category: true,
+				saving: true,
+				wallet: true,
+			},
+			orderBy: {
+				date: 'desc',
 			},
 		})
 	}
