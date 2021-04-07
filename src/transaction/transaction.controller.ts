@@ -1,15 +1,5 @@
 import { CategoryType, TransactionType } from '.prisma/client'
-import {
-	BadRequestException,
-	Body,
-	Controller,
-	ForbiddenException,
-	Get,
-	Post,
-	Query,
-	Request,
-	UseGuards,
-} from '@nestjs/common'
+import { BadRequestException, Body, Controller, ForbiddenException, Get, Post, Query, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { CategoryService } from 'src/category/category.service'
 import { SavingService } from 'src/saving/saving.service'
@@ -19,6 +9,7 @@ import { CreateIncomeExpenseTransactionDto } from './dto/create-income-expense-t
 import { CreateSavingTransactionDto } from './dto/create-saving-transaction.dto'
 import { DateValidationPipe } from './monthly-transaction-date.pipe'
 import { TransactionService } from './transaction.service'
+import { User } from 'src/decorators/user.decorator'
 
 @Controller('api')
 export class TransactionController {
@@ -37,15 +28,13 @@ export class TransactionController {
 
 	@Get('timeline')
 	@UseGuards(JwtAuthGuard)
-	async getTransactions(@Request() req) {
-		const userId = req.user.userId
+	async getTransactions(@User() userId: number) {
 		return this.getTimelineScreenData(userId)
 	}
 
 	@Get('transactions')
 	@UseGuards(JwtAuthGuard)
-	async getMonthlyTransaction(@Query('date', DateValidationPipe) date: any, @Request() req) {
-		const userId = req.user.userId
+	async getMonthlyTransaction(@Query('date', DateValidationPipe) date: any, @User() userId: number) {
 		return this.transactionService.getMontlyTransaction(userId, date.startDate, date.endDate)
 	}
 
@@ -54,9 +43,8 @@ export class TransactionController {
 	async createIncomeTransaction(
 		@Body()
 		{ title, date, amount, category_id, wallet_id }: CreateIncomeExpenseTransactionDto,
-		@Request() req
+		@User() userId: number
 	) {
-		const userId = req.user.userId
 		const ownershipOps: Promise<boolean>[] = [
 			this.walletService.checkWalletOwnership(userId, wallet_id),
 			this.categoryService.checkCategoryOwnershipAndType(userId, category_id, CategoryType.INCOME),
@@ -87,9 +75,8 @@ export class TransactionController {
 	async createExpenseTransaction(
 		@Body()
 		{ title, date, amount, category_id, wallet_id }: CreateIncomeExpenseTransactionDto,
-		@Request() req
+		@User() userId: number
 	) {
-		const userId = req.user.userId
 		const ownershipOps: Promise<boolean>[] = [
 			this.walletService.checkWalletOwnership(userId, wallet_id),
 			this.categoryService.checkCategoryOwnershipAndType(userId, category_id, CategoryType.EXPENSE),
@@ -121,10 +108,8 @@ export class TransactionController {
 	async createSavingTransaction(
 		@Body()
 		{ title, date, amount, category_id, wallet_id, saving_id }: CreateSavingTransactionDto,
-		@Request() req
+		@User() userId: number
 	) {
-		const userId = req.user.userId
-
 		const ownershipOps: Promise<boolean>[] = [
 			this.walletService.checkWalletOwnership(userId, wallet_id),
 			this.categoryService.checkCategoryOwnershipAndType(userId, category_id, CategoryType.EXPENSE),
@@ -162,10 +147,8 @@ export class TransactionController {
 	async createExpanseSavingTransaction(
 		@Body()
 		{ title, date, amount, category_id, saving_id }: CreateExpenseSavingTransactionDto,
-		@Request() req
+		@User() userId: number
 	) {
-		const userId = req.user.userId
-
 		const ownershipOps: Promise<boolean>[] = [
 			this.categoryService.checkCategoryOwnershipAndType(userId, category_id, CategoryType.EXPENSE),
 			this.savingService.checkSavingOwnershipAndFinish(userId, saving_id),

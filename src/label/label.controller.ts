@@ -7,16 +7,15 @@ import {
 	ForbiddenException,
 	Get,
 	Param,
-	ParseIntPipe,
 	Patch,
 	Post,
-	Request,
 	UseGuards,
 } from '@nestjs/common'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { LabelDto } from './dto/label.dto'
 import { LabelValidationPipe } from './label-validation.pipe'
 import { LabelService } from './label.service'
+import { User } from 'src/decorators/user.decorator'
 
 @Controller('api')
 export class LabelController {
@@ -24,8 +23,7 @@ export class LabelController {
 
 	@Post('label')
 	@UseGuards(JwtAuthGuard)
-	async createLabel(@Body() { name, type }: LabelDto, @Request() req): Promise<Label[]> {
-		const userId = req.user.userId
+	async createLabel(@Body() { name, type }: LabelDto, @User() userId: number): Promise<Label[]> {
 		const labelCount = await this.labelService.countLabel(userId)
 		if (labelCount === 10) throw new BadRequestException('Limit number of label exceeded')
 		await this.labelService.createLabel(name, type, userId)
@@ -34,8 +32,7 @@ export class LabelController {
 
 	@Get('labels')
 	@UseGuards(JwtAuthGuard)
-	async getLabels(@Request() req): Promise<Label[]> {
-		const userId = req.user.userId
+	async getLabels(@User() userId: number): Promise<Label[]> {
 		return this.labelService.getLabels(userId)
 	}
 
@@ -44,9 +41,8 @@ export class LabelController {
 	async editLabel(
 		@Param('id', LabelValidationPipe) label: Label,
 		@Body() { name, type }: LabelDto,
-		@Request() req
+		@User() userId: number
 	): Promise<Label[]> {
-		const userId: number = req.user.userId
 		const isOwnLabel = userId === label.owner_id
 		if (!isOwnLabel) throw new ForbiddenException()
 		await this.labelService.editLabel(label.id, name, type)
@@ -55,8 +51,7 @@ export class LabelController {
 
 	@Delete('label/:id')
 	@UseGuards(JwtAuthGuard)
-	async deleteLabel(@Param('id', LabelValidationPipe) label: Label, @Request() req): Promise<Label[]> {
-		const userId = req.user.userId
+	async deleteLabel(@Param('id', LabelValidationPipe) label: Label, @User() userId: number): Promise<Label[]> {
 		const isOwnLabel = await this.labelService.checkLabelOwnership(userId, label.id)
 		if (!isOwnLabel) throw new ForbiddenException()
 		await this.labelService.deleteLabel(label.id)

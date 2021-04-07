@@ -9,7 +9,6 @@ import {
 	Param,
 	Patch,
 	Post,
-	Request,
 	UseGuards,
 } from '@nestjs/common'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
@@ -17,6 +16,7 @@ import { CreateWalletDto } from './dto/create-wallet.dto'
 import { EditWalletDto } from './dto/edit-wallet.dto'
 import { WalletService } from './wallet.service'
 import { WalletValidationPipe } from './wallet-validation.pipe'
+import { User } from 'src/decorators/user.decorator'
 
 @Controller('api')
 export class WalletController {
@@ -24,8 +24,7 @@ export class WalletController {
 
 	@Post('wallet')
 	@UseGuards(JwtAuthGuard)
-	async createWallet(@Body() { name, amount }: CreateWalletDto, @Request() req): Promise<Wallet[]> {
-		const userId = req.user.userId
+	async createWallet(@Body() { name, amount }: CreateWalletDto, @User() userId: number): Promise<Wallet[]> {
 		const walletCount = await this.walletService.countWallets(userId)
 		if (walletCount === 5) throw new BadRequestException('Limit number of wallets exceeded')
 		await this.walletService.createWallet(name, amount, userId)
@@ -34,8 +33,7 @@ export class WalletController {
 
 	@Get('wallets')
 	@UseGuards(JwtAuthGuard)
-	async getWallets(@Request() req) {
-		const userId = req.user.userId
+	async getWallets(@User() userId: number) {
 		const graph = await this.walletService.getExpenseGraphData(userId)
 		const wallets = await this.walletService.getWallets(userId)
 		return { graph, wallets }
@@ -46,20 +44,20 @@ export class WalletController {
 	async editWallet(
 		@Param('id', WalletValidationPipe) wallet: Wallet,
 		@Body() { name }: EditWalletDto,
-		@Request() req
+		@User() userId: number
 	): Promise<Wallet[]> {
-		const isOwnWallet = await this.walletService.checkWalletOwnership(req.user.userId, wallet.id)
+		const isOwnWallet = await this.walletService.checkWalletOwnership(userId, wallet.id)
 		if (!isOwnWallet) throw new ForbiddenException()
 		await this.walletService.editWallet(wallet.id, name)
-		return this.walletService.getWallets(req.user.userId)
+		return this.walletService.getWallets(userId)
 	}
 
 	@Delete('wallet/:id')
 	@UseGuards(JwtAuthGuard)
-	async deleteWallet(@Param('id', WalletValidationPipe) wallet: Wallet, @Request() req): Promise<Wallet[]> {
-		const isOwnWallet = await this.walletService.checkWalletOwnership(req.user.userId, wallet.id)
+	async deleteWallet(@Param('id', WalletValidationPipe) wallet: Wallet, @User() userId: number): Promise<Wallet[]> {
+		const isOwnWallet = await this.walletService.checkWalletOwnership(userId, wallet.id)
 		if (!isOwnWallet) throw new ForbiddenException()
 		await this.walletService.deleteWallet(wallet.id)
-		return this.walletService.getWallets(req.user.userId)
+		return this.walletService.getWallets(userId)
 	}
 }
