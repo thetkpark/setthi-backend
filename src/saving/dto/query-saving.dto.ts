@@ -1,4 +1,4 @@
-import { IsBooleanString, IsOptional, IsNotEmpty } from 'class-validator'
+import { IsBooleanString, IsOptional } from 'class-validator'
 
 export class QuerySavingDto {
 	@IsOptional()
