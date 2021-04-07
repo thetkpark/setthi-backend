@@ -40,6 +40,12 @@ export class SavingController {
 		return this.savingService.getSavings(userId)
 	}
 
+	@Get('finish-unused-saving')
+	@UseGuards(JwtAuthGuard)
+	async getFinishedUnusedSaving(@User() userId: number): Promise<Saving[]> {
+		return this.savingService.getFinishedUnusedSaving(userId)
+	}
+
 	@Patch('saving/:id')
 	@UseGuards(JwtAuthGuard)
 	async editSaving(

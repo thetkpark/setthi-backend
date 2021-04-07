@@ -136,4 +136,20 @@ export class SavingService {
 		})
 		return saving ? true : false
 	}
+
+	async getFinishedUnusedSaving(ownerId: number): Promise<Saving[]> {
+		return this.prisma.saving.findMany({
+			where: {
+				AND: [
+					{ owner_id: ownerId },
+					{ is_finish: true },
+					{
+						current_amount: {
+							not: 0,
+						},
+					},
+				],
+			},
+		})
+	}
 }
