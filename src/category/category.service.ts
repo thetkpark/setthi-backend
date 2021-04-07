@@ -79,4 +79,17 @@ export class CategoryService {
 			},
 		})
 	}
+
+	async initCategories(owner_id: number) {
+		return this.prisma.category.createMany({
+			data: [
+				{ name: 'Salary', color: '246:128:130:240', type: CategoryType.INCOME, owner_id },
+				{ name: 'Bonus', color: '63:190:152:255', type: CategoryType.INCOME, owner_id },
+				{ name: 'Investment', color: '205:114:119:255', type: CategoryType.INCOME, owner_id },
+				{ name: 'Transportation', color: '5:78:52:255', type: CategoryType.EXPENSE, owner_id },
+				{ name: 'Food & Drink', color: '249:213:224:230', type: CategoryType.EXPENSE, owner_id },
+				{ name: 'Party', color: '164:64:196:120', type: CategoryType.EXPENSE, owner_id },
+			],
+		})
+	}
 }
