@@ -18,7 +18,7 @@ import { EditSavingDto } from './dto/edit-saving.dto'
 import { SavingService } from './saving.service'
 import { SavingValidationPipe } from './saving-validation.pipe'
 import { User } from 'src/decorators/user.decorator'
-import { SavingQueryValidationPipe } from './saving-query.pipe'
+import { QuerySavingDto } from './dto/query-saving.dto'
 
 @Controller('api')
 export class SavingController {
@@ -26,12 +26,13 @@ export class SavingController {
 
 	@Get('savings')
 	@UseGuards(JwtAuthGuard)
-	async getSavings(
-		@Query('is_finished', SavingQueryValidationPipe) is_finish: boolean,
-		@Query('is_used', SavingQueryValidationPipe) is_used: boolean,
-		@User() userId: number
-	) {
-		return this.savingService.getSavings(userId, is_finish, is_used)
+	async getSavings(@Query() { is_finished, is_used }: QuerySavingDto, @User() userId: number) {
+		let isFinish: boolean
+		let isUsed: boolean
+		if (is_finished) isFinish = is_finished == 'true'
+		if (is_used) isUsed = is_used == 'true'
+		if (isUsed) isFinish = true
+		return this.savingService.getSavings(userId, isFinish, isUsed)
 	}
 
 	@Post('saving')
