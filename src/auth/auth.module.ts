@@ -7,10 +7,16 @@ import { AuthController } from './auth.controller'
 import { JwtModule } from '@nestjs/jwt'
 import { JwtStrategy } from './jwt.strategy'
 import { MailgunModule } from '@nextnm/nestjs-mailgun'
+import { LabelModule } from 'src/label/label.module'
+import { CategoryModule } from 'src/category/category.module'
+import { WalletModule } from 'src/wallet/wallet.module'
 
 @Module({
 	imports: [
 		UsersModule,
+		LabelModule,
+		CategoryModule,
+		WalletModule,
 		PassportModule,
 		JwtModule.register({
 			secret: process.env.JWT_SECRET,

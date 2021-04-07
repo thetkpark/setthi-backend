@@ -17,10 +17,18 @@ import { LocalAuthGuard } from './local-auth.guard'
 import { generateResetToken } from '../utils/nanoid'
 import { CheckResetTokenDto } from './dto/check-reset-token.dto'
 import { ResetPasswordDto } from './dto/reset-password.dto'
+import { LabelService } from 'src/label/label.service'
+import { CategoryService } from 'src/category/category.service'
+import { WalletService } from 'src/wallet/wallet.service'
 
 @Controller('api/auth')
 export class AuthController {
-	constructor(private authService: AuthService) {}
+	constructor(
+		private authService: AuthService,
+		private labelService: LabelService,
+		private categoryService: CategoryService,
+		private walletService: WalletService
+	) {}
 
 	@UseGuards(LocalAuthGuard)
 	@Post('signin')
@@ -34,6 +42,11 @@ export class AuthController {
 		if (!email) throw new BadRequestException('Email is required')
 		if (!password) throw new BadRequestException('Password is required')
 		const user = await this.authService.regisNewUser(email, password)
+		await Promise.all([
+			this.labelService.initLabels(user.id),
+			this.categoryService.initCategories(user.id),
+			this.walletService.initWallet(user.id),
+		])
 		const token = await this.authService.getToken(user)
 		return { token }
 	}
