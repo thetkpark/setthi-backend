@@ -6,6 +6,7 @@ import {
 	ForbiddenException,
 	Get,
 	Post,
+	Query,
 	Request,
 	UseGuards,
 } from '@nestjs/common'
@@ -16,6 +17,7 @@ import { WalletService } from 'src/wallet/wallet.service'
 import { CreateExpenseSavingTransactionDto } from './dto/create-expense-saving-transaction.dto'
 import { CreateIncomeExpenseTransactionDto } from './dto/create-income-expense-transaction.dto'
 import { CreateSavingTransactionDto } from './dto/create-saving-transaction.dto'
+import { DateValidationPipe } from './monthly-transaction-date.pipe'
 import { TransactionService } from './transaction.service'
 
 @Controller('api')
@@ -38,6 +40,13 @@ export class TransactionController {
 	async getTransactions(@Request() req) {
 		const userId = req.user.userId
 		return this.getTimelineScreenData(userId)
+	}
+
+	@Get('transactions')
+	@UseGuards(JwtAuthGuard)
+	async getMonthlyTransaction(@Query('date', DateValidationPipe) date: any, @Request() req) {
+		const userId = req.user.userId
+		return this.transactionService.getMontlyTransaction(userId, date.startDate, date.endDate)
 	}
 
 	@Post('transaction/income')
