@@ -6,6 +6,45 @@ import { PrismaService } from 'src/prisma.service'
 export class TransactionService {
 	constructor(private prisma: PrismaService) {}
 
+	transactionSelectResponse = {
+		id: true,
+		title: true,
+		amount: true,
+		date: true,
+		transaction_type: true,
+		category: {
+			select: {
+				id: true,
+				name: true,
+				color: true,
+				is_deleted: true,
+				type: true,
+				owner_id: true,
+			},
+		},
+		saving: {
+			select: {
+				id: true,
+				title: true,
+				is_finish: true,
+				current_amount: true,
+				target_amount: true,
+				start_date: true,
+				end_date: true,
+				owner_id: true,
+			},
+		},
+		wallet: {
+			select: {
+				id: true,
+				name: true,
+				amount: true,
+				is_deleted: true,
+				owner_id: true,
+			},
+		},
+	}
+
 	async createTransaction(
 		title: string,
 		amount: number,
@@ -39,44 +78,7 @@ export class TransactionService {
 				date: 'desc',
 			},
 			take: 10,
-			select: {
-				id: true,
-				title: true,
-				amount: true,
-				date: true,
-				transaction_type: true,
-				category: {
-					select: {
-						id: true,
-						name: true,
-						color: true,
-						is_deleted: true,
-						type: true,
-						owner_id: true,
-					},
-				},
-				saving: {
-					select: {
-						id: true,
-						title: true,
-						is_finish: true,
-						current_amount: true,
-						target_amount: true,
-						start_date: true,
-						end_date: true,
-						owner_id: true,
-					},
-				},
-				wallet: {
-					select: {
-						id: true,
-						name: true,
-						amount: true,
-						is_deleted: true,
-						owner_id: true,
-					},
-				},
-			},
+			select: this.transactionSelectResponse,
 		})
 	}
 
@@ -96,43 +98,42 @@ export class TransactionService {
 			orderBy: {
 				date: 'desc',
 			},
-			select: {
-				id: true,
-				title: true,
-				amount: true,
-				date: true,
-				transaction_type: true,
-				category: {
-					select: {
-						id: true,
-						name: true,
-						color: true,
-						is_deleted: true,
-						type: true,
-						owner_id: true,
+			select: this.transactionSelectResponse,
+		})
+	}
+
+	async searchTransactions(owner_id: number, term: string) {
+		return this.prisma.transaction.findMany({
+			select: this.transactionSelectResponse,
+			orderBy: {
+				date: 'desc',
+			},
+			where: {
+				AND: [
+					{ owner_id },
+					{
+						OR: [
+							{
+								category: {
+									name: { contains: term },
+								},
+							},
+							{
+								saving: {
+									title: { contains: term },
+								},
+							},
+							{
+								wallet: {
+									name: { contains: term },
+								},
+							},
+							{
+								title: { contains: term },
+							},
+						],
 					},
-				},
-				saving: {
-					select: {
-						id: true,
-						title: true,
-						is_finish: true,
-						current_amount: true,
-						target_amount: true,
-						start_date: true,
-						end_date: true,
-						owner_id: true,
-					},
-				},
-				wallet: {
-					select: {
-						id: true,
-						name: true,
-						amount: true,
-						is_deleted: true,
-						owner_id: true,
-					},
-				},
+				],
 			},
 		})
 	}

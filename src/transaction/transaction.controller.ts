@@ -1,5 +1,15 @@
 import { CategoryType, TransactionType } from '.prisma/client'
-import { BadRequestException, Body, Controller, ForbiddenException, Get, Post, Query, UseGuards } from '@nestjs/common'
+import {
+	BadRequestException,
+	Body,
+	Controller,
+	ForbiddenException,
+	Get,
+	HttpCode,
+	Post,
+	Query,
+	UseGuards,
+} from '@nestjs/common'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { CategoryService } from 'src/category/category.service'
 import { SavingService } from 'src/saving/saving.service'
@@ -10,6 +20,7 @@ import { CreateSavingTransactionDto } from './dto/create-saving-transaction.dto'
 import { DateValidationPipe } from './monthly-transaction-date.pipe'
 import { TransactionService } from './transaction.service'
 import { User } from 'src/decorators/user.decorator'
+import { SearchTransactionDto } from './dto/search-transaction.dto'
 
 @Controller('api')
 export class TransactionController {
@@ -34,6 +45,12 @@ export class TransactionController {
 	@UseGuards(JwtAuthGuard)
 	async getMonthlyTransaction(@Query('date', DateValidationPipe) date: any, @User() userId: number) {
 		return this.transactionService.getMontlyTransaction(userId, date.startDate, date.endDate)
+	}
+
+	@Get('transactions/search')
+	@UseGuards(JwtAuthGuard)
+	async searchTransaction(@Query() { term }: SearchTransactionDto, @User() userId: number) {
+		return this.transactionService.searchTransactions(userId, term)
 	}
 
 	@Post('transaction/income')
