@@ -105,6 +105,9 @@ export class TransactionService {
 	async searchTransactions(owner_id: number, term: string) {
 		return this.prisma.transaction.findMany({
 			select: this.transactionSelectResponse,
+			orderBy: {
+				date: 'desc',
+			},
 			where: {
 				AND: [
 					{ owner_id },

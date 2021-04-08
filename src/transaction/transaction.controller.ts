@@ -47,8 +47,7 @@ export class TransactionController {
 		return this.transactionService.getMontlyTransaction(userId, date.startDate, date.endDate)
 	}
 
-	@Post('transactions/search')
-	@HttpCode(200)
+	@Get('transactions/search')
 	@UseGuards(JwtAuthGuard)
 	async searchTransaction(@Query() { term }: SearchTransactionDto, @User() userId: number) {
 		return this.transactionService.searchTransactions(userId, term)
