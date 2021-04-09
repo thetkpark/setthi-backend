@@ -12,6 +12,7 @@ import {
 	Query,
 	UseGuards,
 } from '@nestjs/common'
+import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiResponse, ApiUnauthorizedResponse } from '@nestjs/swagger'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { User } from 'src/decorators/user.decorator'
 import { CategoryValidationPipe } from './category-validation.pipe'
@@ -21,11 +22,15 @@ import { EditCategoryDto } from './dto/edit-category.dto'
 import { QueryCategoryDto } from './dto/query-category.dto'
 
 @Controller('api')
+@ApiBearerAuth()
 export class CategoryController {
 	constructor(private categoryService: CategoryService) {}
 
 	@Post('category')
 	@UseGuards(JwtAuthGuard)
+	@ApiOperation({ summary: 'Create new category' })
+	@ApiCreatedResponse({ status: 201 })
+	@ApiUnauthorizedResponse({ type: CategoryDto })
 	async createCategory(@Body() { name, type, color }: CategoryDto, @User() userId: number): Promise<Category[]> {
 		const categoriesCount = await this.categoryService.countCategories(userId, type)
 		if (categoriesCount === 10) throw new BadRequestException(`Limit number of ${type} categories exceeded`)
