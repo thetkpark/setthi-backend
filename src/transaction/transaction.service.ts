@@ -74,9 +74,7 @@ export class TransactionService {
 			where: {
 				owner_id,
 			},
-			orderBy: {
-				date: 'desc',
-			},
+			orderBy: [{ date: 'desc' }, { createdAt: 'desc' }],
 			take: 10,
 			select: this.transactionSelectResponse,
 		})
@@ -95,9 +93,7 @@ export class TransactionService {
 					},
 				],
 			},
-			orderBy: {
-				date: 'desc',
-			},
+			orderBy: [{ date: 'desc' }, { createdAt: 'desc' }],
 			select: this.transactionSelectResponse,
 		})
 	}
@@ -105,9 +101,7 @@ export class TransactionService {
 	async searchTransactions(owner_id: number, term: string) {
 		return this.prisma.transaction.findMany({
 			select: this.transactionSelectResponse,
-			orderBy: {
-				date: 'desc',
-			},
+			orderBy: [{ date: 'desc' }, { createdAt: 'desc' }],
 			where: {
 				AND: [
 					{ owner_id },
