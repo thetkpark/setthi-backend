@@ -11,11 +11,17 @@ import { WalletModule } from './wallet/wallet.module'
 import { LabelModule } from './label/label.module'
 import { CategoryModule } from './category/category.module'
 import { SavingModule } from './saving/saving.module'
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
+import { APP_GUARD } from '@nestjs/core'
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
+		}),
+		ThrottlerModule.forRoot({
+			ttl: 3,
+			limit: 50,
 		}),
 		UsersModule,
 		AuthModule,
@@ -26,6 +32,14 @@ import { SavingModule } from './saving/saving.module'
 		SavingModule,
 	],
 	controllers: [AppController],
-	providers: [AppService, TransactionService, PrismaService],
+	providers: [
+		AppService,
+		TransactionService,
+		PrismaService,
+		{
+			provide: APP_GUARD,
+			useClass: ThrottlerGuard,
+		},
+	],
 })
 export class AppModule {}
