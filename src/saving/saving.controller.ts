@@ -62,7 +62,11 @@ export class SavingController {
 	) {
 		const isOwnSaving = await this.savingService.checkSavingOwnership(userId, saving.id)
 		if (!isOwnSaving) throw new ForbiddenException()
-		await this.savingService.editSaving(saving.id, title, target_amount)
+		const currentAmount = saving.current_amount.toNumber()
+		if (target_amount < currentAmount)
+			throw new BadRequestException("Can't set new target amount lower than current amount")
+		const is_finished = currentAmount === target_amount ? true : false
+		await this.savingService.editSaving(saving.id, title, target_amount, is_finished)
 		return this.savingService.getSavings(userId)
 	}
 
