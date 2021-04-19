@@ -60,6 +60,8 @@ export class CategoryController {
 	): Promise<Category[]> {
 		const isOwnCategory = await this.categoryService.checkCategoryOwnership(userId, category.id)
 		if (!isOwnCategory) throw new ForbiddenException()
+		const numberofCategories = await this.categoryService.countCategories(userId, category.type)
+		if (numberofCategories === 1) throw new BadRequestException('Cannot delete last category')
 		await this.categoryService.deleteCategory(category.id)
 		return this.categoryService.getCategories(userId)
 	}
