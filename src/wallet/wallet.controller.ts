@@ -61,6 +61,8 @@ export class WalletController {
 	async deleteWallet(@Param('id', WalletValidationPipe) wallet: Wallet, @User() userId: number): Promise<Wallet[]> {
 		const isOwnWallet = await this.walletService.checkWalletOwnership(userId, wallet.id)
 		if (!isOwnWallet) throw new ForbiddenException()
+		const numberOfWallets = await this.walletService.countWallets(userId)
+		if (numberOfWallets === 1) throw new BadRequestException('Cannot delete last wallet')
 		await this.walletService.deleteWallet(wallet.id)
 		return this.walletService.getWallets(userId)
 	}

@@ -56,6 +56,8 @@ export class LabelController {
 	async deleteLabel(@Param('id', LabelValidationPipe) label: Label, @User() userId: number): Promise<Label[]> {
 		const isOwnLabel = await this.labelService.checkLabelOwnership(userId, label.id)
 		if (!isOwnLabel) throw new ForbiddenException()
+		const numberOfLabel = await this.labelService.countLabel(userId, label.type)
+		if (numberOfLabel === 1) throw new BadRequestException('Cannot delete last label')
 		await this.labelService.deleteLabel(label.id)
 		return this.labelService.getLabels(userId)
 	}
