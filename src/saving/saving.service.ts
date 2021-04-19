@@ -78,11 +78,12 @@ export class SavingService {
 		})
 	}
 
-	async editSaving(id: number, title: string, target_amount: number): Promise<Saving> {
+	async editSaving(id: number, title: string, target_amount: number, is_finish: boolean): Promise<Saving> {
 		return this.prisma.saving.update({
 			data: {
 				title,
 				target_amount,
+				is_finish,
 			},
 			where: {
 				id,
