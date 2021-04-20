@@ -1,15 +1,5 @@
 import { CategoryType, TransactionType } from '.prisma/client'
-import {
-	BadRequestException,
-	Body,
-	Controller,
-	ForbiddenException,
-	Get,
-	HttpCode,
-	Post,
-	Query,
-	UseGuards,
-} from '@nestjs/common'
+import { BadRequestException, Body, Controller, ForbiddenException, Get, Post, Query, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { CategoryService } from 'src/category/category.service'
 import { SavingService } from 'src/saving/saving.service'
@@ -31,14 +21,10 @@ export class TransactionController {
 		private categoryService: CategoryService
 	) {}
 
-	async getTimelineScreenData(userId: number) {
-		return this.transactionService.getTimelineTransactions(userId)
-	}
-
 	@Get('timeline')
 	@UseGuards(JwtAuthGuard)
 	async getTransactions(@User() userId: number) {
-		return this.getTimelineScreenData(userId)
+		return this.transactionService.getTimelineTransactions(userId)
 	}
 
 	@Get('transactions')
@@ -82,7 +68,8 @@ export class TransactionController {
 		]
 		await Promise.all(transactionOps)
 
-		return this.getTimelineScreenData(userId)
+		const transactions = await this.transactionService.getTimelineTransactions(userId)
+		return { transactions }
 	}
 
 	@Post('transaction/expense')
@@ -112,10 +99,10 @@ export class TransactionController {
 			),
 			this.walletService.updateWalletAmount(wallet_id, TransactionType.EXPENSE, amount),
 		]
-
 		await Promise.all(transactionOps)
 
-		return this.getTimelineScreenData(userId)
+		const transactions = await this.transactionService.getTimelineTransactions(userId)
+		return { transactions }
 	}
 
 	@Post('transaction/saving')
@@ -154,7 +141,7 @@ export class TransactionController {
 
 		await Promise.all(transactionOps)
 
-		return this.getTimelineScreenData(userId)
+		return this.transactionService.getTimelineTransactions(userId)
 	}
 
 	@Post('transaction/expense-saving')
@@ -191,6 +178,7 @@ export class TransactionController {
 
 		await Promise.all(transactionOps)
 
-		return this.getTimelineScreenData(userId)
+		const transactions = await this.transactionService.getTimelineTransactions(userId)
+		return { transactions }
 	}
 }
