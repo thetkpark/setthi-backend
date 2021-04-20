@@ -66,8 +66,13 @@ export class SavingController {
 		if (target_amount < currentAmount)
 			throw new BadRequestException("Can't set new target amount lower than current amount")
 		const is_finished = currentAmount === target_amount ? true : false
-		await this.savingService.editSaving(saving.id, title, target_amount, is_finished)
-		return this.savingService.getSavings(userId)
+		const editedSaving = await this.savingService.editSaving(saving.id, title, target_amount, is_finished)
+		const savings = await this.savingService.getSavings(userId)
+		return {
+			savings,
+			saving_finish: editedSaving.is_finish,
+			saving_name: editedSaving.title,
+		}
 	}
 
 	@Delete('saving/:id')
