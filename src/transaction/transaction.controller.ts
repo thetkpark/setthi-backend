@@ -139,9 +139,15 @@ export class TransactionController {
 			this.savingService.addCurrentAmount(saving_id, amount),
 		]
 
-		await Promise.all(transactionOps)
+		const ops = await Promise.all(transactionOps)
 
-		return this.transactionService.getTimelineTransactions(userId)
+		const transactions = await this.transactionService.getTimelineTransactions(userId)
+
+		return {
+			transactions,
+			saving_finish: ops[2].is_finish,
+			saving_name: ops[2].title,
+		}
 	}
 
 	@Post('transaction/expense-saving')
