@@ -17,7 +17,6 @@ export const getMailTemplate = (token: string) => {
       }
       .wrapper{
         width: 100%;
-        height: 100vh;
         display: flex;
         background-color: #FFF9EE;
       }
@@ -27,6 +26,7 @@ export const getMailTemplate = (token: string) => {
         padding: 30px;
         display: flex;
         margin-top: 30px;
+        margin-bottom: 30px;
       }
       .mt-10{
         margin-top: 10px;
@@ -34,6 +34,10 @@ export const getMailTemplate = (token: string) => {
     </style>
   </head>
   <body>
+  <div>
+  <table style="width:100%;">
+  <tr>
+  <td>
     <div class="wrapper" style="justify-content:center;">
       <div class="box" style="align-items: center;flex-flow:column;width:80%">
         <img src="https://i.ibb.co/dfhgmk2/Banker-Monochromatic-2.png" alt="setthi-logo" border="0" style="width: 50%">
@@ -42,6 +46,10 @@ export const getMailTemplate = (token: string) => {
         <h1 style="letter-spacing: 5px; font-size: 4rem;" class="mt-10">${token}</h1>
         <p class="mt-10" style="text-align: center;">Please enter this recovery key in the application to reset your password</p>
       </div>
+    </div>
+    </td>
+    </tr>
+    </table>
     </div>
   </body>
   </html>
