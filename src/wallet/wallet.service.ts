@@ -215,6 +215,8 @@ export class WalletService {
 			},
 			orderBy: [{ date: 'asc' }, { transaction_type: 'asc' }],
 		})
+		let sumIncome = 0
+		let sumExpense = 0
 		const incomeCategory = {}
 		const expenseCategory = {}
 		transactions.forEach(tran => {
@@ -227,6 +229,7 @@ export class WalletService {
 					}
 				}
 				incomeCategory[tran.category.id].count += 1
+				sumIncome += 1
 			}
 			if (tran.transaction_type == TransactionType.EXPENSE) {
 				if (!Object.keys(expenseCategory).includes(tran.category.id.toString())) {
@@ -237,11 +240,18 @@ export class WalletService {
 					}
 				}
 				expenseCategory[tran.category.id].count += 1
+				sumExpense += 1
 			}
 		})
 		return {
-			income: incomeCategory,
-			expense: expenseCategory,
+			income: {
+				count: sumIncome,
+				data: incomeCategory,
+			},
+			expense: {
+				count: sumExpense,
+				data: expenseCategory,
+			},
 		}
 	}
 
