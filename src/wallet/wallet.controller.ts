@@ -37,6 +37,12 @@ export class WalletController {
 		return this.walletService.getWallets(userId)
 	}
 
+	@Get('category-graph')
+	@UseGuards(JwtAuthGuard)
+	async getCategoryPercentage(@User() userId: number) {
+		return this.walletService.getCategoryPercentage(userId)
+	}
+
 	@Get('expense-graph')
 	@UseGuards(JwtAuthGuard)
 	async getExpenseGraphOnWalletsScreen(@User() userId: number) {
