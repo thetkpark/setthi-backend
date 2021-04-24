@@ -115,53 +115,68 @@ export class WalletService {
 
 	async getExpenseGraphData(owner_id: number) {
 		const fromDate = dayjs().utc().startOf('day').subtract(7, 'day').toDate()
-		const transaction = await this.prisma.transaction.groupBy({
-			by: ['date'],
+		const transactions = await this.prisma.transaction.groupBy({
+			by: ['date', 'transaction_type'],
 			having: {
 				date: {
 					gt: fromDate,
 				},
 			},
 			where: {
-				AND: [{ owner_id }, { transaction_type: TransactionType.EXPENSE }],
+				AND: [
+					{ owner_id },
+					{
+						OR: [
+							{ transaction_type: TransactionType.EXPENSE },
+							{ transaction_type: TransactionType.INCOME },
+						],
+					},
+				],
 			},
 			sum: {
 				amount: true,
 			},
-			orderBy: {
-				date: 'asc',
-			},
+			orderBy: [{ date: 'asc' }, { transaction_type: 'asc' }],
 		})
 
-		let max = 0
-		let j = 0
-		const data = []
+		// let max = 0
+		// let j = 0
+		const data = {
+			income: [],
+			expense: [],
+		}
 		let dateRunner = dayjs(fromDate).add(1, 'day')
 
 		for (let i = 0; i < 7; i++) {
-			let sumAmount = 0
-			if (dateRunner.isSame(transaction[j]?.date)) {
-				sumAmount = transaction[j].sum.amount.toNumber()
-				j++
-			}
+			const income = transactions.find(
+				ele => dateRunner.isSame(ele.date) && ele.transaction_type == TransactionType.INCOME
+			)
+			const expense = transactions.find(
+				ele => dateRunner.isSame(ele.date) && ele.transaction_type == TransactionType.EXPENSE
+			)
+			const date = dateRunner.format('ddd')
+			let incomeAmount = 0
+			let expenseAmpunt = 0
 
-			if (sumAmount > max) max = sumAmount
+			if (income) incomeAmount = income.sum.amount.toNumber()
+			if (expense) expenseAmpunt = expense.sum.amount.toNumber()
 
-			data.push({
-				date: dateRunner.format('ddd'),
-				amount: sumAmount,
+			data.income.push({
+				date,
+				amount: incomeAmount,
+			})
+			data.expense.push({
+				date,
+				amount: expenseAmpunt,
 			})
 			dateRunner = dateRunner.add(1, 'day')
 		}
 
-		const index = Math.floor(max.toString().length * 0.7)
-		const submax = max / Math.pow(10, index)
-		const modmax = Math.ceil(submax) * Math.pow(10, index)
+		// const index = Math.floor(max.toString().length * 0.7)
+		// const submax = max / Math.pow(10, index)
+		// const modmax = Math.ceil(submax) * Math.pow(10, index)
 
-		return {
-			top: modmax,
-			data,
-		}
+		return data
 	}
 
 	async initWallet(owner_id: number) {
