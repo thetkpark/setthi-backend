@@ -186,6 +186,65 @@ export class WalletService {
 		}
 	}
 
+	async getCategoryPercentage(owner_id: number) {
+		const fromDate = dayjs().utc().startOf('day').subtract(7, 'day').toDate()
+		const transactions = await this.prisma.transaction.findMany({
+			where: {
+				AND: [
+					{ owner_id },
+					{
+						OR: [
+							{ transaction_type: TransactionType.EXPENSE },
+							{ transaction_type: TransactionType.INCOME },
+						],
+					},
+					{
+						date: {
+							gt: fromDate,
+						},
+					},
+				],
+			},
+			select: {
+				id: true,
+				title: true,
+				amount: true,
+				date: true,
+				transaction_type: true,
+				category: true,
+			},
+			orderBy: [{ date: 'asc' }, { transaction_type: 'asc' }],
+		})
+		const incomeCategory = {}
+		const expenseCategory = {}
+		transactions.forEach(tran => {
+			if (tran.transaction_type == TransactionType.INCOME) {
+				if (!Object.keys(incomeCategory).includes(tran.category.id.toString())) {
+					incomeCategory[tran.category.id] = {
+						name: tran.category.name,
+						color: tran.category.color,
+						count: 0,
+					}
+				}
+				incomeCategory[tran.category.id].count += 1
+			}
+			if (tran.transaction_type == TransactionType.EXPENSE) {
+				if (!Object.keys(expenseCategory).includes(tran.category.id.toString())) {
+					expenseCategory[tran.category.id] = {
+						name: tran.category.name,
+						color: tran.category.color,
+						count: 0,
+					}
+				}
+				expenseCategory[tran.category.id].count += 1
+			}
+		})
+		return {
+			income: incomeCategory,
+			expense: expenseCategory,
+		}
+	}
+
 	calculateTopValue(max: number) {
 		const index = Math.floor(max.toString().length * 0.7)
 		const submax = max / Math.pow(10, index)
