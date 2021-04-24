@@ -139,8 +139,8 @@ export class WalletService {
 			orderBy: [{ date: 'asc' }, { transaction_type: 'asc' }],
 		})
 
-		// let max = 0
-		// let j = 0
+		let maxIncome = 0
+		let maxExpense = 0
 		const data = {
 			income: [],
 			expense: [],
@@ -156,10 +156,12 @@ export class WalletService {
 			)
 			const date = dateRunner.format('ddd')
 			let incomeAmount = 0
-			let expenseAmpunt = 0
+			let expenseAmount = 0
 
 			if (income) incomeAmount = income.sum.amount.toNumber()
-			if (expense) expenseAmpunt = expense.sum.amount.toNumber()
+			if (expense) expenseAmount = expense.sum.amount.toNumber()
+			if (incomeAmount > maxIncome) maxIncome = incomeAmount
+			if (expenseAmount > maxExpense) maxExpense = expenseAmount
 
 			data.income.push({
 				date,
@@ -167,16 +169,28 @@ export class WalletService {
 			})
 			data.expense.push({
 				date,
-				amount: expenseAmpunt,
+				amount: expenseAmount,
 			})
 			dateRunner = dateRunner.add(1, 'day')
 		}
 
-		// const index = Math.floor(max.toString().length * 0.7)
-		// const submax = max / Math.pow(10, index)
-		// const modmax = Math.ceil(submax) * Math.pow(10, index)
+		return {
+			income: {
+				top: this.calculateTopValue(maxIncome),
+				data: data.income,
+			},
+			expense: {
+				top: this.calculateTopValue(maxExpense),
+				data: data.expense,
+			},
+		}
+	}
 
-		return data
+	calculateTopValue(max: number) {
+		const index = Math.floor(max.toString().length * 0.7)
+		const submax = max / Math.pow(10, index)
+		const modmax = Math.ceil(submax) * Math.pow(10, index)
+		return modmax
 	}
 
 	async initWallet(owner_id: number) {
