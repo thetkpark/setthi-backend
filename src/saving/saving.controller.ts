@@ -1,4 +1,4 @@
-import { Saving } from '.prisma/client'
+import { Saving, TransactionType, Wallet } from '.prisma/client'
 import {
 	BadRequestException,
 	Body,
@@ -19,10 +19,16 @@ import { SavingService } from './saving.service'
 import { SavingValidationPipe } from './saving-validation.pipe'
 import { User } from 'src/decorators/user.decorator'
 import { QuerySavingDto } from './dto/query-saving.dto'
+import { WalletService } from 'src/wallet/wallet.service'
+import { TransactionService } from 'src/transaction/transaction.service'
 
 @Controller('api')
 export class SavingController {
-	constructor(private savingService: SavingService) {}
+	constructor(
+		private savingService: SavingService,
+		private walletService: WalletService,
+		private transactionService: TransactionService
+	) {}
 
 	@Get('savings')
 	@UseGuards(JwtAuthGuard)
@@ -80,7 +86,23 @@ export class SavingController {
 	async deleteSaving(@Param('id', SavingValidationPipe) saving: Saving, @User() userId: number) {
 		const isOwnSaving = await this.savingService.checkSavingOwnership(userId, saving.id)
 		if (!isOwnSaving) throw new ForbiddenException()
-		await this.savingService.deleteSaving(saving.id)
+		const currentAmount = saving.current_amount.toNumber()
+		const data: [Saving, Wallet] = await Promise.all([
+			this.savingService.deleteSaving(saving.id),
+			this.walletService.updateWalletAmountFromDeleteSaving(userId, currentAmount),
+		])
+		if (saving.current_amount.toNumber() !== 0) {
+			await this.transactionService.createTransaction(
+				'Saving Return',
+				currentAmount,
+				1,
+				new Date(),
+				null,
+				TransactionType.INCOME_FROM_SAVING,
+				data[1].id,
+				userId
+			)
+		}
 		return this.savingService.getSavings(userId)
 	}
 }

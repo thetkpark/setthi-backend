@@ -73,6 +73,18 @@ export class WalletService {
 		})
 	}
 
+	async updateWalletAmountFromDeleteSaving(ownerId: number, amount: number): Promise<Wallet> {
+		const wallet = await this.prisma.wallet.findFirst({
+			where: { owner_id: ownerId },
+			select: { amount: true, id: true },
+			orderBy: { createdAt: 'asc' },
+		})
+		return this.prisma.wallet.update({
+			where: { id: wallet.id },
+			data: { amount: wallet.amount.toNumber() + amount },
+		})
+	}
+
 	async deleteWallet(walletId: number): Promise<Wallet> {
 		return this.prisma.wallet.update({
 			where: {
@@ -113,7 +125,7 @@ export class WalletService {
 		return balance.sum.amount.toNumber()
 	}
 
-	async getExpenseGraphData(owner_id: number) {
+	async getIncomeExpenseGraphData(owner_id: number) {
 		const fromDate = dayjs().utc().startOf('day').subtract(7, 'day').toDate()
 		const transactions = await this.prisma.transaction.groupBy({
 			by: ['date', 'transaction_type'],

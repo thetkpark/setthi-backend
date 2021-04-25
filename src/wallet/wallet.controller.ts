@@ -45,8 +45,8 @@ export class WalletController {
 
 	@Get('expense-graph')
 	@UseGuards(JwtAuthGuard)
-	async getExpenseGraphOnWalletsScreen(@User() userId: number) {
-		return this.walletService.getExpenseGraphData(userId)
+	async getIncomeExpenseGraphOnWalletsScreen(@User() userId: number) {
+		return this.walletService.getIncomeExpenseGraphData(userId)
 	}
 
 	@Patch('wallet/:id')
