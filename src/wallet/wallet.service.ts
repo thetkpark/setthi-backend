@@ -73,6 +73,18 @@ export class WalletService {
 		})
 	}
 
+	async updateWalletAmountFromDeleteSaving(ownerId: number, amount: number): Promise<Wallet> {
+		const wallet = await this.prisma.wallet.findFirst({
+			where: { owner_id: ownerId },
+			select: { amount: true, id: true },
+			orderBy: { createdAt: 'asc' },
+		})
+		return this.prisma.wallet.update({
+			where: { id: wallet.id },
+			data: { amount: wallet.amount.toNumber() + amount },
+		})
+	}
+
 	async deleteWallet(walletId: number): Promise<Wallet> {
 		return this.prisma.wallet.update({
 			where: {
