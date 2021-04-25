@@ -113,7 +113,7 @@ export class WalletService {
 		return balance.sum.amount.toNumber()
 	}
 
-	async getExpenseGraphData(owner_id: number) {
+	async getIncomeExpenseGraphData(owner_id: number) {
 		const fromDate = dayjs().utc().startOf('day').subtract(7, 'day').toDate()
 		const transactions = await this.prisma.transaction.groupBy({
 			by: ['date', 'transaction_type'],
