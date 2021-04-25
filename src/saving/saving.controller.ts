@@ -91,16 +91,18 @@ export class SavingController {
 			this.savingService.deleteSaving(saving.id),
 			this.walletService.updateWalletAmountFromDeleteSaving(userId, currentAmount),
 		])
-		await this.transactionService.createTransaction(
-			'Saving Return',
-			currentAmount,
-			1,
-			new Date(),
-			null,
-			TransactionType.INCOME_FROM_SAVING,
-			data[1].id,
-			userId
-		)
+		if (saving.current_amount.toNumber() !== 0) {
+			await this.transactionService.createTransaction(
+				'Saving Return',
+				currentAmount,
+				1,
+				new Date(),
+				null,
+				TransactionType.INCOME_FROM_SAVING,
+				data[1].id,
+				userId
+			)
+		}
 		return this.savingService.getSavings(userId)
 	}
 }
