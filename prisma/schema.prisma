@@ -94,6 +94,7 @@ model Transaction {
 enum CategoryType {
   INCOME
   EXPENSE
+  INCOME_FROM_SAVING
 }
 
 enum LabelType {
@@ -106,4 +107,5 @@ enum TransactionType {
   EXPENSE
   SAVING
   EXPENSE_FROM_SAVING
+  INCOME_FROM_SAVING
 }
